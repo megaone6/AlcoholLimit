@@ -1,0 +1,19 @@
+﻿@page "/profile"
+
+<h1>Profile</h1>
+
+<p role="status">Ez a véleményem: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementAgree">Click me if u agree</button>
+
+<p role="status">@agreeCount</p>
+
+@code {
+    private string currentCount = "cringexd";
+    private string agreeCount = "";
+
+    private void IncrementAgree(){
+        for (int i = 0; i < 100; i++)
+            agreeCount = agreeCount + "\nCRINGE";
+    }
+}

@@ -1,4 +1,4 @@
-﻿@page "/fetchdata"
+﻿@page "/fooddrink"
 
 @using AlcoholLimit.Data
 @inject WeatherForecastService ForecastService
@@ -44,3 +44,4 @@ else
 		forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
 	}
 }
+

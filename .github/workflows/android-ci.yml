@@ -23,6 +23,6 @@ jobs:
     - name: Install .NET maui
       run: dotnet workload install maui
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore AlcoholLimit/AlcoholLimit/AlcoholLimit.csproj 
     - name: Build
       run: dotnet build AlcoholLimit/AlcoholLimit/AlcoholLimit.csproj -c Release -f net6.0-android --no-restore

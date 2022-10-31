@@ -18,10 +18,11 @@ public static class MauiProgram
 		builder.Services.AddMauiBlazorWebView();
 		#if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();
-#endif
+		#endif
 		
 		builder.Services.AddSingleton<WeatherForecastService>();
+        builder.Services.AddSingleton<DrinkDatabase>();
 
-		return builder.Build();
+        return builder.Build();
 	}
 }

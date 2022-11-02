@@ -5,6 +5,7 @@ namespace AlcoholLimit.Pages
         private const string STARTING_TIME = "00:00:00";
 
         private bool hideList = true;
+        private bool isDrinking = false;
         private string drinkingStatus = "You have not started drinking yet.";
         private string buttonLabel = "Start drinking session";
         private double bloodAlcoholLevel = 0;
@@ -27,14 +28,16 @@ namespace AlcoholLimit.Pages
 
         private void changeStatus()
         {
-            if (drinkingStatus == "You have started drinking.")
+            if (isDrinking)
             {
+                isDrinking = false;
                 hideList = true;
                 drinkingStatus = "You have not started drinking yet.";
                 buttonLabel = "Start drinking session";
             }
             else
             {
+                isDrinking = true;
                 hideList = false;
                 drinkingStatus = "You have started drinking.";
                 buttonLabel = "Stop drinking session";

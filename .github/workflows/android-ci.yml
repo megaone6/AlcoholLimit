@@ -27,4 +27,4 @@ jobs:
     - name: Build
       run: dotnet build AlcoholLimit/AlcoholLimit/AlcoholLimit.csproj -c Release -f net6.0-android --no-restore
     - name: Run Tests
-      run: dotnet test AlcoholLimit/AlcoholLimit/AlcoholLimit.csproj -c Release -f net6.0 --no-restore
+      run: dotnet test AlcoholLimit/AlcoholLimit/AlcoholLimit.csproj

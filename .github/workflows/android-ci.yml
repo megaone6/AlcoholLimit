@@ -1,7 +1,7 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: Build App (CI)
+name: Build and Validate App (CI)
 
 on:
   push:
@@ -26,3 +26,5 @@ jobs:
       run: dotnet restore AlcoholLimit/AlcoholLimit/AlcoholLimit.csproj 
     - name: Build
       run: dotnet build AlcoholLimit/AlcoholLimit/AlcoholLimit.csproj -c Release -f net6.0-android --no-restore
+    - name: Run Tests
+      run: dotnet test AlcoholLimit/AlcoholLimit/AlcoholLimit.csproj -c Release -f net6.0 --no-restore

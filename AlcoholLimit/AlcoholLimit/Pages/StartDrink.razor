@@ -1,20 +1,37 @@
 ﻿@page "/startdrinking"
 
-<h1>New round</h1>
+<h1>Start drinking</h1>
 
-<p role="status">Ez a véleményem: @currentCount</p>
+<p role="status" style="text-align:center;font-size:200%"><b>@drinkingStatus</b></p>
+<p>Elapsed time: @elapsedTime</p>
 
-<button class="btn btn-primary" @onclick="IncrementAgree">Click me if u agree</button>
+<button class="btn btn-primary" @onclick="changeStatus">@buttonLabel</button>
+<button class="btn btn-primary" @onclick="addFoodOrDrink">Add food or drink</button>
+<p></p>
 
-<p role="status">@agreeCount</p>
+<p>Blood alchohol level: @bloodAlcoholLevel%</p>
+<button class="btn btn-primary" @onclick="changeBloodAlcLevel">Change blood alcohol level (for testing purposes)</button>
+<p></p>
 
-@code {
-    private string currentCount = "cringexd";
-    private string agreeCount = "";
-
-    private void IncrementAgree(){
-        for (int i = 0; i < 100; i++)
-            agreeCount = agreeCount + "\nCRINGE";
-    }
-}
-
+<p style="font-size:130%" hidden="@hideList">Drinks in current session: </p>
+<table class="table" hidden="@hideList">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Alc%</th>
+			<th>ml</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>Light Beer</td>
+			<td>4.2%</td>
+			<td>500</td>
+		</tr>
+		<tr>
+			<td>Red wine</td>
+			<td>12.5%</td>
+			<td>100</td>
+		</tr>
+	</tbody>
+</table>

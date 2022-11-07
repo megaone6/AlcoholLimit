@@ -1,0 +1,35 @@
+﻿@page "/formula"
+
+<h1>Anyad</h1>
+<p role="status">Current count: @bloodAlcohol</p>
+<button class="btn btn-primary" @onclick="()=>currentBloodAlcohol(true, 80, 2, 0.014, 2)">Click me</button>
+
+@code 
+{
+    public double bloodAlcohol = 0; //Widmark formula anyad
+                                    //private bool isMale = true;
+
+        // BAC = [Alcohol consumed in grams / (Body weight in grams x r)] x 100.
+        // 80 kg male drinking 2 drinks of 14 grams (0.014 kg) each, in two hours:
+        // (2 * 0.014) / (0.68 * 80) * 100 - (0.015*2) ~ 0.021%
+
+        void currentBloodAlcohol(bool sex, int weight, double time, double alcoholInGrams, int numberOfDrinks)
+        {
+            double bac;
+            double alcoholMetabolization;
+            double r; //gender constant
+            if (sex == true)
+            {
+                r = 0.68;
+                alcoholMetabolization = 0.015;
+            }
+            else
+            {
+                r = 0.55;
+                alcoholMetabolization = 0.017;
+            }
+            bac = (numberOfDrinks * alcoholInGrams / (r * weight)) * 100 - (alcoholMetabolization * time);
+            bloodAlcohol = bac;
+    }
+
+}

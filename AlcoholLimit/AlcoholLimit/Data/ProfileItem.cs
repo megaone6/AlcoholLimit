@@ -12,8 +12,10 @@ namespace AlcoholLimit.Data
     {
         public int ID { get; set; }
         public string Name { get; set; }
-        public int Weight { get; set; } //Size of the drink in milliliter (ml)
+        public int Weight { get; set; }
         public sex Sex { get; set; }
+        public String Email { get; set; }
+        public String Password { get; set; }
         public bool nightmode { get; set; }
     }
 }

@@ -1,27 +1,71 @@
 ﻿@page "/settings"
+@using AlcoholLimit.Data
+@inject ProfileDatabase pd
 <h3>Settings</h3>
 
 <div class="form-check">
-    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-    <label class="form-check-label" for="flexCheckDefault">
+    <input class="form-check-input" type="checkbox" value="" id="nightmode">
+    <label class="form-check-label" for="nightmode">
        Night mode
     </label>
 </div>
 
 <div class="form-check">
-    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-    <label class="form-check-label" for="flexCheckDefault">
+    <input class="form-check-input" type="checkbox" value="" id="not_daily">
+    <label class="form-check-label" for="not_daily">
         Napi értesítés
     </label>
 </div>
 <div class="form-check">
-    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-    <label class="form-check-label" for="flexCheckDefault">
+    <input class="form-check-input" type="checkbox" value="" id="not_weekly">
+    <label class="form-check-label" for="not_weekly">
         Heti értesítés
     </label>
+</div>
+<div class="form-check">
+    <input class="form-check-input" type="checkbox" value="" id="not_threshold">
+    <label class="form-check-label" for="not_threshold">
+        Értesítés alkoholszint elérésekor
+    </label>
+</div>
+<div class="mb-3">
+    <label for="threshold" class="form-label">Értesítési alkoholszint</label>
+    <input type="email" class="form-control" id="threshold" placeholder="80 kg">
 </div>
 
 
 @code {
+    private ProfileItem profile;
 
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            profile = await pd.GetItemAsync(1);
+        }
+        catch{
+            ProfileItem p = new ProfileItem();
+
+            p.ID = 1;
+            p.Name = "Teszt Erik";
+            p.Sex = sex.MAN;
+            p.Weight = 71;
+            p.nightmode = false;
+
+            await pd.SaveItemAsync(p);
+        }
+	}
+
+	private async void Save()
+	{
+		profile.Sex = sex.WOMAN;
+
+		await pd.SaveItemAsync(profile);
+	}
+
+	private async void Refresh()
+	{
+		profile = await pd.GetItemAsync(1);
+	}
 }

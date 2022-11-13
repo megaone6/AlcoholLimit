@@ -18,7 +18,7 @@ namespace AlcoholLimit.Pages
 
         protected override void OnInitialized()
         {
-            startTimer();
+            startTimer(); //timer increment felorankent
         }
 
         private void startTimer()
@@ -46,7 +46,7 @@ namespace AlcoholLimit.Pages
 
         private void addFoodOrDrink()
         {
-
+            //
         }
 
         private void changeBloodAlcLevel()

@@ -1,6 +1,20 @@
 ﻿@page "/profile"
 @using AlcoholLimit.Data
+
 @inject ProfileDatabase pd
+
+<ul class="nav justify-content-center">
+	<li class="nav-item">
+		<a class="nav-link active" aria-current="profile" href="profile">Profile</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link" href="settings">Settings</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link" href="register">Register/Login</a>
+	</li>
+</ul>
+
 <h3>Profile</h3>
 
 @if (profile == null)
@@ -19,47 +33,37 @@ else
 	</div>
 	<div class="mb-3">
 		<label for="exampleFormControlInput1" class="form-label">Password</label>
-		<input @bind="profile.Password" class="form-control" id="exampleFormControlInput1">
+		<input type="password" @bind="profile.Password" class="form-control" id="exampleFormControlInput1">
 	</div>
 	<div class="mb-3">
 		<label for="exampleFormControlInput1" class="form-label">Weight</label>
 		<input @bind="profile.Weight" class="form-control" id="exampleFormControlInput1" placeholder="80 kg">
 	</div>
-
-	<div class="form-check">
-		<input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
-		<label class="form-check-label" for="flexRadioDefault1">
-			Férfi
-		</label>
+	<div class="mb-3">
+		<label for="exampleFormControlInput1" class="form-label">Sex</label>
+		<select @bind="profile.Sex">
+			<option value="MAN">MAN</option>
+			<option value="WOMAN">WOMAN</option>
+		</select>
 	</div>
-	<div class="form-check">
-		<input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
-		<label class="form-check-label" for="flexRadioDefault2">
-			Nő
-		</label>
-	</div>
-
 	<button class="btn btn-primary" @onclick="Save">Save</button>
 }
 
 
 @code {
-	private ProfileItem profile;
+	public ProfileItem profile;
 
 	protected override async Task OnInitializedAsync()
 	{
-		profile = await pd.GetItemAsync("Sanyi");
+		profile = await pd.GetItemAsync(0);
 		if(profile == null)
 		{
 			profile = new ProfileItem();
 		}
-		
-		
 	}
 
 	private async void Save()
 	{
-
 		await pd.SaveItemAsync(profile);
 	}
 

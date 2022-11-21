@@ -82,3 +82,9 @@ a, .btn-link {
 		padding-left: env(safe-area-inset-left);
 	}
 }
+
+
+.nightmode {
+    background-color: black;
+    color: white;
+}

@@ -1,19 +1,17 @@
 ﻿@page "/"
 
-<ul class="nav justify-content-center">
-  <li class="nav-item">
-    <a class="nav-link active" aria-current="profile" href="profile">Profile</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="settings">Settings</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="register">Register/Login</a>
-  </li>
-</ul>
+<UpperMenu/>
 
 <h1>Hello, world!</h1>
 
-Welcome to your new app.
+This App can help you track your drinking habits and give you a good upper limit for your actual blood alcohol level ;)
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<SurveyPrompt Title="How is the App working for you?" />
+
+@code {
+	protected override void OnInitialized()
+	{
+		
+	}
+
+}

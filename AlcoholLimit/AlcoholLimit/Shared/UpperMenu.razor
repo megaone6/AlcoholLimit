@@ -1,0 +1,43 @@
+﻿@using AlcoholLimit.Data
+@inject AppState AppState
+
+<ul class="nav justify-content-center">
+	@if (AppState.profile.ID != -1)
+	{
+		<li class="nav-item">
+			<a class="nav-link active" aria-current="profile" href="profile">Profile</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link" href="settings">Settings</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link" href="#" @onclick="logout">Logout</a>
+		</li>
+	}
+	else
+	{
+		<li class="nav-item">
+			<a class="nav-link" href="login">Login/Register</a>
+		</li>
+	}
+
+
+</ul>
+
+
+@code {
+	protected override void OnInitialized()
+	{
+		AppState.OnChange += StateHasChanged;
+	}
+
+	public void Dispose()
+	{
+		AppState.OnChange -= StateHasChanged;
+	}
+
+	public void logout()
+	{
+		AppState.SetProfile();
+	}
+}

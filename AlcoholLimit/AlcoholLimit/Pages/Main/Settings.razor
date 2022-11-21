@@ -1,27 +1,78 @@
 ﻿@page "/settings"
+@using AlcoholLimit.Data
+@inject ProfileDatabase pd
+
+<ul class="nav justify-content-center">
+  <li class="nav-item">
+    <a class="nav-link active" aria-current="profile" href="profile">Profile</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="settings">Settings</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="register">Register/Login</a>
+  </li>
+</ul>
+
 <h3>Settings</h3>
 
-<div class="form-check">
-    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-    <label class="form-check-label" for="flexCheckDefault">
-       Night mode
-    </label>
-</div>
+@if (profile == null)
+{
+	<p><em>Loading...</em></p>
+}
+else
+{
+    <div class="form-check">
+        <input @bind="profile.nightmode" class="form-check-input" type="checkbox" value="" id="nightmode">
+        <label class="form-check-label" for="nightmode">
+           Night mode
+        </label>
+    </div>
 
-<div class="form-check">
-    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-    <label class="form-check-label" for="flexCheckDefault">
-        Napi értesítés
-    </label>
-</div>
-<div class="form-check">
-    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-    <label class="form-check-label" for="flexCheckDefault">
-        Heti értesítés
-    </label>
-</div>
-
+    <div class="form-check">
+        <input @bind="profile.dailyNot" class="form-check-input" type="checkbox" value="" id="dailyNot">
+        <label class="form-check-label" for="dailyNot">
+            Daily notification
+        </label>
+    </div>
+    <div class="form-check">
+        <input @bind="profile.weeklyNot" class="form-check-input" type="checkbox" value="" id="weeklyNot">
+        <label class="form-check-label" for="weeklyNot">
+            Weekly notification
+        </label>
+    </div>
+    <div class="form-check">
+        <input @bind="profile.thresholdNot" class="form-check-input" type="checkbox" value="" id="thresholdNot">
+        <label class="form-check-label" for="thresholdNot">
+            Notify me when threshold reached
+        </label>
+    </div>
+    <div class="mb-3">
+        <label for="threshold" class="form-label">Threshold</label>
+        <input @bind="profile.bloodThreshold" class="form-control" id="threshold" placeholder="e.g. 0.4">
+    </div>
+    <button class="btn btn-primary" @onclick="Save">Save</button>
+}
 
 @code {
+    public ProfileItem profile;
 
+    protected override async Task OnInitializedAsync()
+    {
+        profile = await pd.GetItemAsync(0);
+        if(profile == null)
+        {
+            profile = new ProfileItem();
+        }
+    }
+
+    private async void Save()
+    {
+        await pd.SaveItemAsync(profile);
+    }
+
+    private async void Refresh()
+    {
+        profile = await pd.GetItemAsync(1);
+    }
 }

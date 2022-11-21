@@ -20,7 +20,7 @@ namespace AlcoholLimit.Data
         public override async Task<int> SaveItemAsync(ProfileItem item)
         {
             await Init();
-            if (item.ID != 0)
+            if (item.ID != -1)
                 return await database.UpdateAsync(item);
             else
                 return await database.InsertAsync(item);

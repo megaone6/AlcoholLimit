@@ -1,17 +1,34 @@
 ﻿@inherits LayoutComponentBase
+@using AlcoholLimit.Data
+@inject ProfileDatabase pd
 
-<div class="page">
-	<div class="sidebar">
-		<NavMenu />
-	</div>
-
-	<main>
-		<div class="top-row px-4">
-			<a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+@if (profile == null)
+{
+	<p><em>Loading...</em></p>
+}
+else
+{
+	<div class="page @(profile.nightmode ? "nightmode" : "")">
+		<div class="sidebar">
+			<NavMenu />
 		</div>
+		<main>
+			<article class="content px-4">
+				@Body
+			</article>
+		</main>
+	</div>
+}
 
-		<article class="content px-4">
-			@Body
-		</article>
-	</main>
-</div>
+@code{
+		public ProfileItem profile;
+
+		protected override async Task OnInitializedAsync()
+		{
+			profile = await pd.GetItemAsync(0);
+			if (profile == null)
+			{
+				profile = new ProfileItem();
+			}
+		}
+ }

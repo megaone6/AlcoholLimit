@@ -21,16 +21,12 @@ namespace AlcoholLimit.Pages
         {
             InvokeAsync(() =>
             {
-                currentTime = e.SignalTime.AddMinutes(29).AddSeconds(55);  //.Addminutes(minute) for testing
+                currentTime = e.SignalTime;  //.Addminutes(minute) for testing
                 elapsedTime = $"{currentTime.Subtract(startTime)}".Substring(0, 8);
                 long elapsedTicks = currentTime.Ticks - startTime.Ticks;
-                TimeSpan elapsedSpan = new TimeSpan(elapsedTicks);
+                elapsedSpan = new TimeSpan(elapsedTicks);
                 elapsedsomething = elapsedSpan.TotalMinutes;
 
-               /* if (elapsedsomething / (numberOfThirtyMins+1)*30 >= 1)
-                {
-                    numberOfThirtyMins++;
-                }*/
                 StateHasChanged();
             });
             
@@ -40,20 +36,23 @@ namespace AlcoholLimit.Pages
             InvokeAsync(() =>
             {
                 displayBac = currentBloodAlcohol(true, 80, elapsedSpan.TotalHours, 0.014, 2);
+
+                StateHasChanged();
             });
         }
         private void startTimer()
         {
             startTime = DateTime.Now;
             timer = new System.Timers.Timer(1);
-            timer2 = new System.Timers.Timer(1);
+            timer2 = new System.Timers.Timer(1800000);
             timer.Elapsed += OnTimedEvent;
             timer2.Elapsed += OnTimedEvent2;
-            timer2.Interval = 1800000;
             timer.AutoReset = true;
             timer.Enabled = true;
             timer2.AutoReset = true;
             timer2.Enabled = true;
+            displayBac = currentBloodAlcohol(true, 80, elapsedSpan.TotalHours, 0.014, 2);
+            timer2.Start();
         }
 
         private void stopTimer()
@@ -80,6 +79,7 @@ namespace AlcoholLimit.Pages
                 drinkingStatus = "You have started drinking.";
                 buttonLabel = "Stop drinking session";
                 startTimer();
+            
             }
         }
 

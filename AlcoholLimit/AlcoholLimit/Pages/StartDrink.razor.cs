@@ -14,7 +14,6 @@ namespace AlcoholLimit.Pages
         private DateTime startTime = DateTime.Now;
         private DateTime currentTime;
         private double elapsedsomething = 0;
-        private int numberOfThirtyMins = 0;
         TimeSpan elapsedSpan;
 
         private void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)

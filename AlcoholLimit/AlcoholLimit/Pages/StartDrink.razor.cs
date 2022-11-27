@@ -1,3 +1,5 @@
+using Plugin.LocalNotification;
+
 namespace AlcoholLimit.Pages
 {
     public partial class StartDrink
@@ -38,6 +40,7 @@ namespace AlcoholLimit.Pages
 
                 StateHasChanged();
             });
+            notifyOnHighBloodAlcohol(0.05);
         }
         private void startTimer()
         {
@@ -85,6 +88,22 @@ namespace AlcoholLimit.Pages
         private void addFoodOrDrink()
         {
 
+        }
+
+        private void notifyOnHighBloodAlcohol(double threshold)
+        {
+            if (displayBac >= threshold)
+            {
+                var request = new NotificationRequest
+                {
+                    NotificationId = 0,
+                    Title = "Warning!",
+                    Subtitle = "Threshold reached!",
+                    Description = "You have reached your blood alcohol threshold. Maybe you should take a break?",
+                    CategoryType = NotificationCategoryType.Alarm
+                };
+                LocalNotificationCenter.Current.Show(request);
+            }
         }
 
         public double displayBac;

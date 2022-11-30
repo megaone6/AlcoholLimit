@@ -46,7 +46,7 @@ namespace AlcoholLimit.Pages
         {
             startTime = DateTime.Now;
             timer = new System.Timers.Timer(1);
-            timer2 = new System.Timers.Timer(5000);
+            timer2 = new System.Timers.Timer(1800000);
             timer.Elapsed += OnTimedEvent;
             timer2.Elapsed += OnTimedEvent2;
             timer.AutoReset = true;

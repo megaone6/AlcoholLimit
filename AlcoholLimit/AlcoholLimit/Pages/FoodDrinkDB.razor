@@ -29,8 +29,8 @@ else
 				<tr>
 					<th>Name</th>
 					<th>Size (ml)</th>
-					<th>Alc%</th>
-					<th>StandardDrink</th>
+					<th>Alcohol%</th>
+					<th>Pure Alcohol (g)</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -40,7 +40,7 @@ else
 						<td>@drinkItem.Name</td>
 						<td>@drinkItem.Size</td>
 						<td>@drinkItem.AlcoholPercent</td>
-						<td>@drinkItem.StandardDrink</td>
+						<td>@drinkItem.PureAlcGram</td>
 					</tr>
 				}
 			</tbody>
@@ -73,6 +73,10 @@ else
 	private async void DeleteAll()
 	{
 		drinkItemCache.Clear();
+		foreach (var item in await DrinkDatabase.GetDefaultItemsAsync())
+		{
+			drinkItemCache.Add(item);
+		}
 		DrinkDatabase.DeleteAllItemAsync();
 	}
 

@@ -13,9 +13,9 @@ namespace AlcoholLimit.Data
         public int ID { get; set; }
         public string Name { get; set; }
         public int Size { get; set; } //Size of the drink in milliliter (ml)
-        public int AlcoholPercent { get; set; }
-        public int Cost { get; set; }
-        public int Calories { get; set; }
-        public int StandardDrink => Size * AlcoholPercent / 100; //TODO: Calculate StandardDrink properly
+        public double AlcoholPercent { get; set; }
+        public int Cost { get; set; } //In HUF
+        public int Calories { get; set; } //In kCal
+        public double PureAlcGram => Size * (AlcoholPercent / 100) * 0.78945;
     }
 }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static SQLite.SQLite3;
 
 namespace AlcoholLimit.Data
 {
@@ -18,7 +19,14 @@ namespace AlcoholLimit.Data
                 return;
 
             database = new SQLiteAsyncConnection(Constants.DatabasePath, Constants.Flags);
-            var result = await database.CreateTableAsync<T>();
+            _ = await database.CreateTableAsync<T>();
+
+            AddDefaultItems();
+        }
+
+        protected virtual void AddDefaultItems()
+        {
+
         }
 
         #region Public methods
@@ -44,7 +52,9 @@ namespace AlcoholLimit.Data
         public async Task<int> DeleteAllItemAsync()
         {
             await Init();
-            return await database.DeleteAllAsync<T>();
+            var result = await database.DeleteAllAsync<T>();
+            AddDefaultItems();
+            return result;
         }
 
         #endregion

@@ -9,7 +9,7 @@ namespace AlcoholLimit.Data
         public async Task<List<DrinkItem>> GetItemsStandardDrinkAsync()
         {
             await Init();
-            return await database.Table<DrinkItem>().Where(t => t.StandardDrink > 1).ToListAsync();
+            return await database.Table<DrinkItem>().Where(t => t.PureAlcGram > 1).ToListAsync();
         }
 
         public override async Task<DrinkItem> GetItemAsync(int id)
@@ -32,7 +32,35 @@ namespace AlcoholLimit.Data
             else
                 return await database.InsertAsync(item);
         }
+        public async Task<List<DrinkItem>> GetDefaultItemsAsync()
+        {
+            List<DrinkItem> items = new List<DrinkItem>();
+            items.Add(
+                new DrinkItem
+                {
+                    Name = "Sörike",
+                    Size = 500,
+                    AlcoholPercent = 4,
+                    Cost = 1200,
+                    Calories = 200
+                });
+            return items;
+        }
 
         #endregion
+
+        protected override void AddDefaultItems()
+        {
+            DrinkItem item = new DrinkItem
+            {
+                Name = "Sörike",
+                Size = 500,
+                AlcoholPercent = 4,
+                Cost = 1200,
+                Calories = 200
+            };
+
+            _ = SaveItemAsync(item);
+        }
     }
 }

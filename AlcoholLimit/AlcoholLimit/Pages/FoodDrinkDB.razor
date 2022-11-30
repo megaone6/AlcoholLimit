@@ -5,60 +5,64 @@
 
 <h1>Drink Database</h1>
 
-<button class="btn btn-primary" @onclick="Refresh">Refresh</button>
-<button class="btn btn-primary" @onclick="AddItem">AddItem</button>
-<button class="btn btn-primary" @onclick="DeleteAll">Delete All</button>
+@if (isAddItemMode)
+{
+	<AlcoholLimit.Components.FDRecordForm 
+		OnDrinkItemSubmitted="@AddItem"
+		OnCanceled="@ToggleAddItem"
+	/>
+}
+else 
+{
+	<button class="btn btn-primary" @onclick="ToggleAddItem">Add Item</button>
+	<button class="btn btn-primary" @onclick="Refresh">Refresh</button>
+	<button class="btn btn-primary" @onclick="DeleteAll">Delete All</button>
 
-@if (drinkItemCache == null)
-{
-	<p><em>Loading...</em></p>
-}
-else
-{
-	<table class="table">
-		<thead>
-			<tr>
-				<th>Name</th>
-				<th>Size (ml)</th>
-				<th>Alc%</th>
-				<th>Pure Alcohol (g)</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var drinkItem in drinkItemCache)
-			{
+	@if (drinkItemCache == null)
+	{
+		<p><em>Loading...</em></p>
+	}
+	else
+	{
+		<table class="table">
+			<thead>
 				<tr>
-					<td>@drinkItem.Name</td>
-					<td>@drinkItem.Size</td>
-					<td>@drinkItem.AlcoholPercent</td>
-					<td>@drinkItem.PureAlcGram</td>
+					<th>Name</th>
+					<th>Size (ml)</th>
+					<th>Alcohol%</th>
+					<th>Pure Alcohol (g)</th>
 				</tr>
-			}
-		</tbody>
-	</table>
+			</thead>
+			<tbody>
+				@foreach (var drinkItem in drinkItemCache)
+				{
+					<tr>
+						<td>@drinkItem.Name</td>
+						<td>@drinkItem.Size</td>
+						<td>@drinkItem.AlcoholPercent</td>
+						<td>@drinkItem.PureAlcGram</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	}
 }
+
 
 @code {
 	private List<DrinkItem> drinkItemCache;
+	private bool isAddItemMode = false;
 
 	protected override async Task OnInitializedAsync()
 	{
 		drinkItemCache = await DrinkDatabase.GetItemsAsync();
 	}
 
-	private void AddItem()
+	private async Task AddItem(DrinkItem item)
 	{
-		DrinkItem item = new DrinkItem
-		{
-			Name = "Sörike",
-			Size = 500,
-			AlcoholPercent = 4,
-			Cost = 20,
-			Calories = 20000
-		};
-
 		drinkItemCache.Add(item);
 		DrinkDatabase.SaveItemAsync(item);
+		isAddItemMode = false;
 	}
 
 	private async void Refresh()
@@ -79,6 +83,11 @@ else
 	private async Task RefreshDrinkItemCache()
 	{
 		drinkItemCache = await DrinkDatabase.GetItemsAsync();
+	}
+
+	private void ToggleAddItem()
+	{
+		isAddItemMode = !isAddItemMode;
 	}
 }
 

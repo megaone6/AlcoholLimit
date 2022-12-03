@@ -20,15 +20,15 @@ else
 		</div>
 		<div class="mb-3">
 			<label for="exampleFormControlInput1" class="form-label">Email address</label>
-			<input required @bind="profile.Email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+			<input required @bind="profile.Email" class="form-control" id="exampleFormControlInput1" placeholder="e.g. name@example.com">
 		</div>
 		<div class="mb-3">
 			<label for="exampleFormControlInput1" class="form-label">Password</label>
 			<input required type="password" @bind="profile.Password" class="form-control" id="exampleFormControlInput1">
 		</div>
 		<div class="mb-3">
-			<label for="exampleFormControlInput1" class="form-label">Weight</label>
-			<input min="20" required @bind="profile.Weight" class="form-control" id="exampleFormControlInput1" placeholder="80 kg">
+			<label for="exampleFormControlInput1" class="form-label">Weight [kg]</label>
+			<input min="20" required @bind="profile.Weight" class="form-control" id="exampleFormControlInput1" placeholder="e.g. 80">
 		</div>
 		<div class="mb-3">
 			<label for="exampleFormControlInput1" class="form-label">Sex</label>
@@ -53,26 +53,7 @@ else
 		</div>
 		<button class="btn btn-primary" @onclick="login">Login</button>
 	}
-@*	<p>számosság: @l.ElementAt(1).Name</p>*@
-<table class="table">
-		<thead>
-			<tr>
-				<th>ID</th>
-				<th>Name</th>
 
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var li in l)
-			{
-				<tr>
-					<td>@li.ID</td>
-					<td>@li.Name</td>
-
-				</tr>
-			}
-		</tbody>
-	</table>
 	@if(errors.Length > 0)
 	{
 		<div class="mb-3">
@@ -89,28 +70,34 @@ else
 	public bool newUser = false;
 	public String errors = "";
 
-	public List<ProfileItem> l = new List<ProfileItem>();
+	private List<ProfileItem> profiles = new List<ProfileItem>();
 
 	protected override async Task OnInitializedAsync()
 	{
 		//await pd.DeleteAllItemAsync();
-		l = await pd.GetItemsAsync();
+		profiles = await pd.GetItemsAsync();
 
 		profile = new ProfileItem();
 		profile.ID = -1;
 		stored_profile = await pd.GetItemAsync(0);
-		if (stored_profile == null)
+		if (profiles.Count == 0)
 		{
 			newUser = true;
 			stored_profile = new ProfileItem();
 			stored_profile.ID = -1;
 		}
+		else
+			stored_profile = profiles.ElementAt(0);
+
 		StateHasChanged();
 	}
 
 	private async void register()
 	{
 		errors = "";
+		if (profile.Weight < 20)
+			errors = "Your weight is too low";
+
 		if (IsValidEmail(profile.Email) & profile.Password.Length > 5)
 		{
 			await pd.SaveItemAsync(profile);
@@ -118,7 +105,6 @@ else
 			profile = new ProfileItem();
 			profile.ID = -1;
 			newUser = false;
-			//l = await pd.GetItemsAsync();
 			StateHasChanged();
 		}
 		else

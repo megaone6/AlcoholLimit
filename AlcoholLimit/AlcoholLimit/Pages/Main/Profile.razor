@@ -42,10 +42,12 @@ else
 
 @code {
 	public ProfileItem profile;
+	private List<ProfileItem> profiles = new List<ProfileItem>();
 
 	protected override async Task OnInitializedAsync()
 	{
-		profile = await pd.GetItemAsync("Balázs");
+		profiles = await pd.GetItemsAsync();
+		profile = profiles.ElementAt(0);
 	}
 
 	private async void Save()

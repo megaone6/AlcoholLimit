@@ -74,12 +74,11 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		//await pd.DeleteAllItemAsync();
+		await pd.DeleteAllItemAsync();
 		profiles = await pd.GetItemsAsync();
 
 		profile = new ProfileItem();
 		profile.ID = -1;
-		stored_profile = await pd.GetItemAsync(0);
 		if (profiles.Count == 0)
 		{
 			newUser = true;
@@ -96,7 +95,16 @@ else
 	{
 		errors = "";
 		if (profile.Weight < 20)
+		{
 			errors = "Your weight is too low";
+			return;
+		}
+
+		if (profile.Name == null || profile.Email == null || profile.Password == null)
+		{
+			errors = "Providing an email, a name and password is compulsory";
+			return;
+		}		
 
 		if (IsValidEmail(profile.Email) & profile.Password.Length > 5)
 		{
@@ -121,7 +129,7 @@ else
 			UriHelper.NavigateTo("");
 		}
 		else
-			errors = "User not found!"+stored_profile.Email+stored_profile.Password;
+			errors = "User not found!";
 	}
 
 	private bool IsValidEmail(string email)

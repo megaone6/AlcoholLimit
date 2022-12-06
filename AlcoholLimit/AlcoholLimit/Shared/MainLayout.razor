@@ -1,34 +1,32 @@
 ﻿@inherits LayoutComponentBase
 @using AlcoholLimit.Data
-@inject ProfileDatabase pd
+@inject AppState AppState
 
-@if (profile == null)
-{
-	<p><em>Loading...</em></p>
-}
-else
-{
-	<div class="page @(profile.nightmode ? "nightmode" : "")">
+
+
+<div class="page @(AppState.profile.nightmode ? "nightmode" : "")">
+	@if (AppState.profile.ID != -1){
 		<div class="sidebar">
 			<NavMenu />
 		</div>
-		<main>
-			<article class="content px-4">
-				@Body
-			</article>
-		</main>
-	</div>
-}
+	}
+	
+	<main>
+		<article class="content px-4">
+			@Body			
+		</article>
+	</main>
+</div>
+
 
 @code{
-		public ProfileItem profile;
+	protected override void OnInitialized()
+	{
+		AppState.OnChange += StateHasChanged;
+	}
 
-		protected override async Task OnInitializedAsync()
-		{
-			profile = await pd.GetItemAsync(0);
-			if (profile == null)
-			{
-				profile = new ProfileItem();
-			}
-		}
- }
+	public void Dispose()
+	{
+		AppState.OnChange -= StateHasChanged;
+	}
+}

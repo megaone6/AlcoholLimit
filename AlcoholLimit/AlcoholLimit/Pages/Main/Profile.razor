@@ -1,19 +1,9 @@
 ﻿@page "/profile"
 @using AlcoholLimit.Data
-
+@inject AppState AppState
 @inject ProfileDatabase pd
 
-<ul class="nav justify-content-center">
-	<li class="nav-item">
-		<a class="nav-link active" aria-current="profile" href="profile">Profile</a>
-	</li>
-	<li class="nav-item">
-		<a class="nav-link" href="settings">Settings</a>
-	</li>
-	<li class="nav-item">
-		<a class="nav-link" href="register">Register/Login</a>
-	</li>
-</ul>
+<UpperMenu/>
 
 <h3>Profile</h3>
 
@@ -52,18 +42,17 @@ else
 
 @code {
 	public ProfileItem profile;
+	private List<ProfileItem> profiles = new List<ProfileItem>();
 
 	protected override async Task OnInitializedAsync()
 	{
-		profile = await pd.GetItemAsync(0);
-		if(profile == null)
-		{
-			profile = new ProfileItem();
-		}
+		profiles = await pd.GetItemsAsync();
+		profile = profiles.ElementAt(0);
 	}
 
 	private async void Save()
 	{
+		AppState.SetProfile(profile);
 		await pd.SaveItemAsync(profile);
 	}
 

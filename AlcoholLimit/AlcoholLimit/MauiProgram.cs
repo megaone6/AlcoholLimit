@@ -23,6 +23,7 @@ public static class MauiProgram
 		builder.Services.AddSingleton<WeatherForecastService>();
         builder.Services.AddSingleton<DrinkDatabase>();
         builder.Services.AddSingleton<ProfileDatabase>();
+        builder.Services.AddSingleton<AppState>();
 
         return builder.Build();
 	}

@@ -4,7 +4,7 @@ VisualStudioVersion = 17.0.31611.283
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlcoholLimit", "AlcoholLimit\AlcoholLimit.csproj", "{3ABAA918-F511-4F02-8C38-F0C07E1663A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlcoholLimitTest", "AlcoholLimitTest\AlcoholLimitTest.csproj", "{095DCC41-332F-4D26-A9C1-7B6B346A1833}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlcoholLimitTest", "AlcoholLimitTest\AlcoholLimitTest.csproj", "{095DCC41-332F-4D26-A9C1-7B6B346A1833}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

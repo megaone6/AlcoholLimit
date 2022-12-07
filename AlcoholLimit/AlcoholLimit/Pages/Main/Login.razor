@@ -52,13 +52,14 @@ else
 			<input type="password" @bind="profile.Password" class="form-control" id="exampleFormControlInput1">
 		</div>
 		<button class="btn btn-primary" @onclick="login">Login</button>
+		<button class="btn btn-primary" @onclick="flush">Delete users</button>
 	}
 
-	@if(errors.Length > 0)
+	@if (errors.Length > 0)
 	{
 		<div class="mb-3">
 			<div class="alert alert-danger" role="alert">
-			  @errors.ToString()
+				@errors.ToString()
 			</div>
 		</div>
 	}
@@ -74,7 +75,6 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		await pd.DeleteAllItemAsync();
 		profiles = await pd.GetItemsAsync();
 
 		profile = new ProfileItem();
@@ -91,6 +91,15 @@ else
 		StateHasChanged();
 	}
 
+	private async void flush()
+	{
+		await pd.DeleteAllItemAsync();
+		profiles = new List<ProfileItem>(); ;
+		stored_profile = new ProfileItem();
+		newUser = true;
+		StateHasChanged();
+	}
+
 	private async void register()
 	{
 		errors = "";
@@ -104,7 +113,7 @@ else
 		{
 			errors = "Providing an email, a name and password is compulsory";
 			return;
-		}		
+		}
 
 		if (IsValidEmail(profile.Email) & profile.Password.Length > 5)
 		{

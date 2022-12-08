@@ -85,7 +85,7 @@ namespace AlcoholLimit.Pages
             }
         }
 
-        private void addFoodOrDrink()
+        private void addDrink()
         {
             // TODO: Implement adding drink to current session and notification when reaching the threshold
         }
@@ -125,5 +125,10 @@ namespace AlcoholLimit.Pages
             double bloodAlcoholLevel = (numberOfDrinks * alcoholInGrams / (r * weight)) * 100 - (alcoholMetabolization * time);
             return bloodAlcoholLevel;
         }
+        protected override void OnInitialized()
+        {
+
+        }
     }
+
 }

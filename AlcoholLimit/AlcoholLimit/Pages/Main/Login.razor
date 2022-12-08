@@ -1,4 +1,4 @@
-﻿@page "/login"
+﻿@page "/"
 @using AlcoholLimit.Data
 @inject NavigationManager UriHelper
 @inject ProfileDatabase pd
@@ -126,7 +126,7 @@ else
 		if (profile.Password == stored_profile.Password & profile.Email == stored_profile.Email)
 		{
 			AppState.SetProfile(stored_profile);
-			UriHelper.NavigateTo("");
+			UriHelper.NavigateTo("/startdrink");
 		}
 		else
 			errors = "User not found!";

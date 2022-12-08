@@ -1,27 +1,18 @@
 ﻿@using AlcoholLimit.Data
 @inject AppState AppState
+@inject NavigationManager UriHelper
 
 <ul class="nav justify-content-center">
 	@if (AppState.profile.ID != -1)
 	{
-		<li class="nav-item">
-			<a class="nav-link active" aria-current="profile" href="profile">Profile</a>
-		</li>
-		<li class="nav-item">
-			<a class="nav-link" href="settings">Settings</a>
-		</li>
-		<li class="nav-item">
-			<a class="nav-link" href="#" @onclick="logout">Logout</a>
-		</li>
+		<a class="btn btn-primary" href="profile">Profile</a>
+		<a class="btn btn-primary" href="settings">Settings</a>
+		<a class="btn btn-primary" @onclick="logout">Logout</a>
 	}
 	else
 	{
-		<li class="nav-item">
-			<a class="nav-link" href="login">Login/Register</a>
-		</li>
+		<a class="btn btn-primary" href="login">Login/Register</a>
 	}
-
-
 </ul>
 
 
@@ -39,5 +30,7 @@
 	public void logout()
 	{
 		AppState.SetProfile();
+		StateHasChanged();
+		UriHelper.NavigateTo("");
 	}
 }

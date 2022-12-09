@@ -40,7 +40,7 @@ namespace AlcoholLimit.Pages
 
                 StateHasChanged();
             });
-            notifyOnHighBloodAlcohol(0.05); // only here for testing purposes at the moment
+            notifyOnHighBloodAlcohol(AppState.profile.bloodThreshold); // only here for testing purposes at the moment
         }
         private void startTimer()
         {
@@ -90,7 +90,7 @@ namespace AlcoholLimit.Pages
             // TODO: Implement adding drink to current session and notification when reaching the threshold
         }
 
-        private void notifyOnHighBloodAlcohol(double threshold)
+        private void notifyOnHighBloodAlcohol(float threshold)
         {
             if (displayBac >= threshold)
             {

@@ -1,4 +1,7 @@
-﻿@page "/startdrinking"
+﻿@page "/startdrink"
+@using AlcoholLimit.Data
+@inject AppState AppState
+
 <UpperMenu/>
 
 <h1>Start drinking</h1>
@@ -7,7 +10,7 @@
 <p>Elapsed time: @elapsedTime</p>
 
 <button class="btn btn-primary" @onclick="changeStatus">@buttonLabel</button>
-<button class="btn btn-primary" @onclick="addFoodOrDrink">Add food or drink</button>
+<button class="btn btn-primary" @onclick="addDrink">Add drink</button>
 <p></p>
 
 <p>Blood alchohol level: @displayBac%</p>

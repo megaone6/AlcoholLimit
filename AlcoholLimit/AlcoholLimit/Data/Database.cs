@@ -19,15 +19,13 @@ namespace AlcoholLimit.Data
                 return;
 
             database = new SQLiteAsyncConnection(Constants.DatabasePath, Constants.Flags);
-            _ = await database.CreateTableAsync<T>();
-
-            AddDefaultItems();
+            if(CreateTableResult.Created == (await database.CreateTableAsync<T>()))
+            {
+                AddDefaultItems();
+            };
         }
 
-        protected virtual void AddDefaultItems()
-        {
-
-        }
+        protected virtual void AddDefaultItems() { }
 
         #region Public methods
 

@@ -1,36 +1,38 @@
 ﻿@using AlcoholLimit.Data
+@using AlcoholLimit.DTOs
 
-<EditForm Model="@drinkItemRecord">
+<EditForm Model="@drinkItemDTO" OnValidSubmit="@Submit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
     <div class="mb-3">
         <label for="name" class="form-label">Drink Item:</label>
-        <InputText  @bind-Value="drinkItemRecord.Name" class="form-control" id="name" />
+        <InputText @bind-Value="drinkItemDTO.Name" class="form-control" id="name" />
 
         <label for="size" class="form-label">Volume (ml): </label>
-        <InputNumber @bind-Value="drinkItemRecord.Size" class="form-control" id="size" />
+        <InputNumber @bind-Value="drinkItemDTO.Size" class="form-control" id="size" />
 
         <label for="alcohol-percent" class="form-label">Alcohol %:</label>
-        <InputNumber @bind-Value="drinkItemRecord.AlcoholPercent" class="form-control" id="alcohol-percent" />
+        <InputNumber @bind-Value="drinkItemDTO.AlcoholPercent" onchange="" class="form-control" id="alcohol-percent" />
         
         <label for="cost" class="form-label">Cost:</label>
-        <InputNumber @bind-Value="drinkItemRecord.Cost" class="form-control" id="cost" />
+        <InputNumber @bind-Value="drinkItemDTO.Cost" class="form-control" id="cost" />
 
         <label for="calories" class="form-label">Calories:</label>
-        <InputNumber @bind-Value="drinkItemRecord.Calories" class="form-control" id="calories" />
+        <InputNumber @bind-Value="drinkItemDTO.Calories" class="form-control" id="calories" />
 
         <button class="btn btn-danger" style="margin-top: 1em" @onclick="OnCanceled">@CancelText</button>
-        <button class="btn btn-primary" style="margin-top: 1em" @onclick="Submit">@SubmitText</button>
+        <button class="btn btn-primary" style="margin-top: 1em" type="submit">@SubmitText</button>
     </div>
 </EditForm>
 
 @code {
-    private DrinkItem drinkItemRecord = new();
-
+    private DrinkItemInputDTO drinkItemDTO = new();
     [Parameter]
     public string SubmitText { get; set; } = "Add";
 
     [Parameter]
     public string CancelText { get; set; } = "Cancel";
-
 
     [Parameter]
     public EventCallback<DrinkItem> OnDrinkItemSubmitted { get; set; }
@@ -38,8 +40,18 @@
     [Parameter]
     public EventCallback OnCanceled { get; set; }
 
+    private bool isValid = true;
+
     private void Submit()
     {
+        DrinkItem drinkItemRecord = new DrinkItem
+        {
+                Name = this.drinkItemDTO.Name,
+                Size = this.drinkItemDTO.Size,
+                AlcoholPercent = this.drinkItemDTO.AlcoholPercent,
+                Cost = this.drinkItemDTO.Cost,
+                Calories = this.drinkItemDTO.Calories
+        };
         OnDrinkItemSubmitted.InvokeAsync(drinkItemRecord);
     }
 }

@@ -40,7 +40,7 @@ namespace AlcoholLimit.Pages
 
                 StateHasChanged();
             });
-            notifyOnHighBloodAlcohol(0.05); // only here for testing purposes at the moment
+            notifyOnHighBloodAlcohol(AppState.profile.bloodThreshold); // only here for testing purposes at the moment
         }
         private void startTimer()
         {
@@ -85,12 +85,12 @@ namespace AlcoholLimit.Pages
             }
         }
 
-        private void addFoodOrDrink()
+        private void addDrink()
         {
             // TODO: Implement adding drink to current session and notification when reaching the threshold
         }
 
-        private void notifyOnHighBloodAlcohol(double threshold)
+        private void notifyOnHighBloodAlcohol(float threshold)
         {
             if (displayBac >= threshold)
             {
@@ -125,5 +125,10 @@ namespace AlcoholLimit.Pages
             double bloodAlcoholLevel = (numberOfDrinks * alcoholInGrams / (r * weight)) * 100 - (alcoholMetabolization * time);
             return bloodAlcoholLevel;
         }
+        protected override void OnInitialized()
+        {
+
+        }
     }
+
 }

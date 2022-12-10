@@ -1,16 +1,85 @@
-﻿@page "/prevdrinks"
+﻿@using AlcoholLimit.Data
+@inject ConsumedDrinkDatabase ConsumedDrinkDatabase
+@inject DrinkDatabase DrinkDatabase
+
+
+@page "/prevdrinks"
+
 <UpperMenu/>
-<h1>Counter</h1>
+<h1>Previous Drinking Page</h1>
 
-<p role="status">Current count: @currentCount</p>
+<button class="btn btn-primary" @onclick="Refresh">Refresh</button>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+@if (cDrinkItemCache == null)
+{
+	<p><em>Loading...</em></p>
+}
+else
+{
+	@foreach (var drinkItemKey in cDrinkItemCache.Keys)
+	{
+		<h2>@drinkItemKey</h2>
+
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Size (ml)</th>
+					<th>Alcohol%</th>
+					<th>Pure Alcohol (g)</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var drinkItem in cDrinkItemCache[drinkItemKey])
+				{
+					<tr>
+						@if(drinkItemMap[drinkItem.ID] is not null)
+						{
+						<td>@drinkItemMap[drinkItem.DrinkItemID].Name</td>
+						<td>@drinkItemMap[drinkItem.DrinkItemID].Size</td>
+						<td>@drinkItemMap[drinkItem.DrinkItemID].AlcoholPercent</td>
+						<td>@drinkItemMap[drinkItem.DrinkItemID].PureAlcGram</td>
+						}
+					</tr>
+				}
+			</tbody>
+		</table>
+	}
+}
 
 @code {
-    private int currentCount = 0;
+	private Dictionary<string, List<ConsumedDrinkItem>> cDrinkItemCache;
+	private Dictionary<int, DrinkItem> drinkItemMap = new();
 
-    private void IncrementCount()
-    {
-        currentCount++;
-    }
+	private bool isAddItemMode = false;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await RefreshDrinkItemCache();
+	}
+
+	private async void Refresh()
+	{
+		await RefreshDrinkItemCache();
+	}
+
+	private async Task RefreshDrinkItemCache()
+	{
+		cDrinkItemCache = await ConsumedDrinkDatabase.GetItemsByDateAsync();
+		HashSet<int> drinkItemIds = new();
+		foreach (var cDrinkItemList in cDrinkItemCache.Values) 
+		{
+			foreach (var cDrinkItem in cDrinkItemList)
+			{
+				drinkItemIds.Add(cDrinkItem.DrinkItemID);
+			}
+		}
+
+		drinkItemMap.Clear();
+		List<DrinkItem> drinkItems = await DrinkDatabase.GetItemsFromIdSetAsync(drinkItemIds);
+		foreach (var drinkItem in drinkItems) 
+		{
+			drinkItemMap.Add(drinkItem.ID, drinkItem);
+		}
+	}
 }

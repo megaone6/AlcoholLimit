@@ -1,5 +1,9 @@
 ﻿@page "/startdrink"
-<UpperMenu/>
+@using AlcoholLimit.Data
+@inject DrinkDatabase DrinkDatabase
+@inject AppState AppState
+
+<UpperMenu />
 
 <h1>Start drinking</h1>
 
@@ -7,31 +11,40 @@
 <p>Elapsed time: @elapsedTime</p>
 
 <button class="btn btn-primary" @onclick="changeStatus">@buttonLabel</button>
-<button class="btn btn-primary" @onclick="addDrink">Add drink</button>
+<button class="btn btn-primary" disabled="@hideComponents" @onclick="addDrink">Add drink</button>
 <p></p>
 
 <p>Blood alchohol level: @displayBac%</p>
 <p></p>
 
-<p style="font-size:130%" hidden="@hideList">Drinks in current session: </p>
-<table class="table" hidden="@hideList">
-	<thead>
-		<tr>
-			<th>Name</th>
-			<th>Alc%</th>
-			<th>ml</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<td>Light Beer</td>
-			<td>4.2%</td>
-			<td>500</td>
-		</tr>
-		<tr>
-			<td>Red wine</td>
-			<td>12.5%</td>
-			<td>100</td>
-		</tr>
-	</tbody>
+<select hidden="@hideComponents">
+    <option disabled hidden selected>Drinks</option>
+    @foreach (DrinkItem drink in drinks)
+    {
+        <option>@drink.Name</option>
+        selectedDrink = drink;
+    }
+</select>
+
+<p style="font-size:130%" hidden="@hideComponents">Drinks in current session: </p>
+<table class="table" hidden="@hideComponents">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Alc%</th>
+            <th>ml</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Light Beer</td>
+            <td>4.2%</td>
+            <td>500</td>
+        </tr>
+        <tr>
+            <td>Red wine</td>
+            <td>12.5%</td>
+            <td>100</td>
+        </tr>
+    </tbody>
 </table>

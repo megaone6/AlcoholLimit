@@ -1,4 +1,6 @@
+using AlcoholLimit.Data;
 using Plugin.LocalNotification;
+using System.Diagnostics;
 
 namespace AlcoholLimit.Pages
 {
@@ -6,7 +8,7 @@ namespace AlcoholLimit.Pages
     {
         private const string DEFAULT_TIME = "00:00:00";
 
-        private bool hideList = true;
+        private bool hideComponents = true;
         private bool isDrinking = false;
         private string drinkingStatus = "You have not started drinking yet.";
         private string buttonLabel = "Start drinking session";
@@ -17,12 +19,16 @@ namespace AlcoholLimit.Pages
         private DateTime currentTime;
         private double elapsedsomething = 0;
         TimeSpan elapsedSpan;
+        private List<DrinkItem> drinks = new List<DrinkItem>();
+        private int numberOfDrinks = 0;
+        private DrinkItem selectedDrink = new DrinkItem();
+        private double sumAlcoholGrams = 0;
 
         private void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
         {
             InvokeAsync(() =>
             {
-                currentTime = e.SignalTime;  //.Addminutes(minute) for testing
+                currentTime = e.SignalTime.AddMinutes(60);  //.Addminutes(minute) for testing
                 elapsedTime = $"{currentTime.Subtract(startTime)}".Substring(0, 8);
                 long elapsedTicks = currentTime.Ticks - startTime.Ticks;
                 elapsedSpan = new TimeSpan(elapsedTicks);
@@ -30,13 +36,13 @@ namespace AlcoholLimit.Pages
 
                 StateHasChanged();
             });
-            
+
         }
         private void OnTimedEvent2(Object source, System.Timers.ElapsedEventArgs e)
         {
             InvokeAsync(() =>
             {
-                displayBac = currentBloodAlcohol(true, 80, elapsedSpan.TotalHours, 0.014, 2);
+                displayBac = currentBloodAlcohol(AppState.profile.Sex, AppState.profile.Weight, elapsedSpan.TotalHours, sumAlcoholGrams, numberOfDrinks);
 
                 StateHasChanged();
             });
@@ -53,7 +59,7 @@ namespace AlcoholLimit.Pages
             timer.Enabled = true;
             timer2.AutoReset = true;
             timer2.Enabled = true;
-            displayBac = currentBloodAlcohol(true, 80, elapsedSpan.TotalHours, 0.014, 2);
+            displayBac = 0;
             timer2.Start();
         }
 
@@ -69,25 +75,34 @@ namespace AlcoholLimit.Pages
             if (isDrinking)
             {
                 isDrinking = false;
-                hideList = true;
+                hideComponents = true;
                 drinkingStatus = "You have not started drinking yet.";
                 buttonLabel = "Start drinking session";
+                displayBac = 0;
+                numberOfDrinks = 0;
+                sumAlcoholGrams = 0;
                 stopTimer();
             }
             else
             {
                 isDrinking = true;
-                hideList = false;
+                hideComponents = false;
                 drinkingStatus = "You have started drinking.";
                 buttonLabel = "Stop drinking session";
                 startTimer();
-            
+
             }
         }
 
         private void addDrink()
         {
-            // TODO: Implement adding drink to current session and notification when reaching the threshold
+            Debug.WriteLine(selectedDrink.PureAlcGram);
+            numberOfDrinks++;
+            sumAlcoholGrams += selectedDrink.PureAlcGram;
+            Debug.WriteLine(sumAlcoholGrams);
+
+            displayBac = currentBloodAlcohol(AppState.profile.Sex, AppState.profile.Weight, elapsedSpan.TotalHours, sumAlcoholGrams, numberOfDrinks);
+            StateHasChanged();
         }
 
         private void notifyOnHighBloodAlcohol(double threshold)
@@ -107,11 +122,11 @@ namespace AlcoholLimit.Pages
         }
 
         public double displayBac;
-        public double currentBloodAlcohol(bool sex, int weight, double time, double alcoholInGrams, int numberOfDrinks)
+        public double currentBloodAlcohol(sex enumerator, int weight, double time, double alcoholInGrams, int numberOfDrinks)
         {
             double alcoholMetabolization;
             double r; //gender constant
-            if (sex == true)
+            if (enumerator == sex.MAN)
             {
                 r = 0.68;
                 alcoholMetabolization = 0.015;
@@ -122,12 +137,13 @@ namespace AlcoholLimit.Pages
                 alcoholMetabolization = 0.017;
             }
 
-            double bloodAlcoholLevel = (numberOfDrinks * alcoholInGrams / (r * weight)) * 100 - (alcoholMetabolization * time);
+            double bloodAlcoholLevel = (numberOfDrinks * (alcoholInGrams/1000) / (r * weight)) * 100 - (alcoholMetabolization * time);
             return bloodAlcoholLevel;
         }
-        protected override void OnInitialized()
+        protected override async void OnInitialized()
         {
-
+            drinks = await DrinkDatabase.GetItemsAsync();
+            StateHasChanged();
         }
     }
 

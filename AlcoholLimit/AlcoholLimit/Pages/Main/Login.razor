@@ -1,4 +1,4 @@
-﻿@page "/login"
+﻿@page "/"
 @using AlcoholLimit.Data
 @inject NavigationManager UriHelper
 @inject ProfileDatabase pd
@@ -52,7 +52,6 @@ else
 			<input type="password" @bind="profile.Password" class="form-control" id="exampleFormControlInput1">
 		</div>
 		<button class="btn btn-primary" @onclick="login">Login</button>
-		<button class="btn btn-primary" @onclick="flush">Delete users</button>
 	}
 
 	@if (errors.Length > 0)
@@ -75,6 +74,7 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
+		//await pd.DeleteAllItemAsync();
 		profiles = await pd.GetItemsAsync();
 
 		profile = new ProfileItem();
@@ -88,15 +88,6 @@ else
 		else
 			stored_profile = profiles.ElementAt(0);
 
-		StateHasChanged();
-	}
-
-	private async void flush()
-	{
-		await pd.DeleteAllItemAsync();
-		profiles = new List<ProfileItem>(); ;
-		stored_profile = new ProfileItem();
-		newUser = true;
 		StateHasChanged();
 	}
 
@@ -135,7 +126,7 @@ else
 		if (profile.Password == stored_profile.Password & profile.Email == stored_profile.Email)
 		{
 			AppState.SetProfile(stored_profile);
-			UriHelper.NavigateTo("");
+			UriHelper.NavigateTo("/startdrink");
 		}
 		else
 			errors = "User not found!";

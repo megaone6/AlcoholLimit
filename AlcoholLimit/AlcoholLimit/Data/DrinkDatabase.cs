@@ -24,6 +24,12 @@ namespace AlcoholLimit.Data
             return await database.Table<DrinkItem>().Where(i => i.Name == name).FirstOrDefaultAsync();
         }
 
+        public async Task<List<DrinkItem>> GetItemsFromIdSetAsync(HashSet<int> idSet)
+        {
+            await Init();
+            return await database.Table<DrinkItem>().Where(i => idSet.Contains(i.ID)).ToListAsync();
+        }
+
         public override async Task<int> SaveItemAsync(DrinkItem item)
         {
             await Init();

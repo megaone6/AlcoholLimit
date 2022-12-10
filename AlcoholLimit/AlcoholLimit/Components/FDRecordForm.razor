@@ -21,7 +21,7 @@
         <label for="calories" class="form-label">Calories:</label>
         <InputNumber @bind-Value="drinkItemDTO.Calories" class="form-control" id="calories" />
 
-        <button class="btn btn-danger" style="margin-top: 1em" @onclick="OnCanceled">@CancelText</button>
+        <button class="btn btn-danger" style="margin-top: 1em" type="button" @onclick="OnCanceled">@CancelText</button>
         <button class="btn btn-primary" style="margin-top: 1em" type="submit">@SubmitText</button>
     </div>
 </EditForm>

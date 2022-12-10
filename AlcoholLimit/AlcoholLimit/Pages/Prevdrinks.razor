@@ -18,32 +18,35 @@ else
 {
 	@foreach (var drinkItemKey in cDrinkItemCache.Keys)
 	{
-		<h2>@drinkItemKey</h2>
+		@if (cDrinkItemCache[drinkItemKey].Count > 0)
+		{
+			<h2>@drinkItemKey</h2>
 
-		<table class="table">
-			<thead>
-				<tr>
-					<th>Name</th>
-					<th>Size (ml)</th>
-					<th>Alcohol%</th>
-					<th>Pure Alcohol (g)</th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var drinkItem in cDrinkItemCache[drinkItemKey])
-				{
+			<table class="table">
+				<thead>
 					<tr>
-						@if(drinkItemMap[drinkItem.ID] is not null)
-						{
-						<td>@drinkItemMap[drinkItem.DrinkItemID].Name</td>
-						<td>@drinkItemMap[drinkItem.DrinkItemID].Size</td>
-						<td>@drinkItemMap[drinkItem.DrinkItemID].AlcoholPercent</td>
-						<td>@drinkItemMap[drinkItem.DrinkItemID].PureAlcGram</td>
-						}
+						<th>Name</th>
+						<th>Size (ml)</th>
+						<th>Alcohol%</th>
+						<th>Pure Alcohol (g)</th>
 					</tr>
-				}
-			</tbody>
-		</table>
+				</thead>
+				<tbody>
+					@foreach (var drinkItem in cDrinkItemCache[drinkItemKey])
+					{
+						<tr>
+							@if(drinkItemMap.TryGetValue(drinkItem.ID, out _))
+							{
+								<td>@drinkItemMap[drinkItem.DrinkItemID].Name</td>
+								<td>@drinkItemMap[drinkItem.DrinkItemID].Size</td>
+								<td>@drinkItemMap[drinkItem.DrinkItemID].AlcoholPercent</td>
+								<td>@drinkItemMap[drinkItem.DrinkItemID].PureAlcGram</td>
+							}
+						</tr>
+					}
+				</tbody>
+			</table>
+		}
 	}
 }
 

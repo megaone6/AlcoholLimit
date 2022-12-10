@@ -24,10 +24,7 @@ namespace AlcoholLimit.Data
             AddDefaultItems();
         }
 
-        protected virtual void AddDefaultItems()
-        {
-
-        }
+        protected virtual void AddDefaultItems() { }
 
         #region Public methods
 

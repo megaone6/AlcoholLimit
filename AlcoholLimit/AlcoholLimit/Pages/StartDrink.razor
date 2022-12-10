@@ -34,15 +34,13 @@
         </tr>
     </thead>
     <tbody>
-        <tr>
-            <td>Light Beer</td>
-            <td>4.2%</td>
-            <td>500</td>
-        </tr>
-        <tr>
-            <td>Red wine</td>
-            <td>12.5%</td>
-            <td>100</td>
-        </tr>
+        @foreach (DrinkItem drink in consumedDrinks)
+        {
+            <tr>
+                <td>@drink.Name</td>
+                <td>@drink.AlcoholPercent</td>
+                <td>@drink.Size</td>
+            </tr>
+        }
     </tbody>
 </table>

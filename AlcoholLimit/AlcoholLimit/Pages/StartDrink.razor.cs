@@ -99,9 +99,13 @@ namespace AlcoholLimit.Pages
             selectedDrink = await DrinkDatabase.GetItemAsync(selectedID);
             sumAlcoholGrams += selectedDrink.PureAlcGram;
             consumedDrinks.Add(selectedDrink);
+            ConsumedDrinkItem consumed = new ConsumedDrinkItem();
+            consumed.DrinkItemID = selectedID;
+            consumed.Date = DateTime.Now.Date.ToString("yyyy/MM/dd");
+            await ConsumedDrinkDatabase.SaveItemAsync(consumed);
 
             displayBac = currentBloodAlcohol(AppState.profile.Sex, AppState.profile.Weight, elapsedSpan.TotalHours, sumAlcoholGrams);
-            if(OperatingSystem.IsAndroid() || OperatingSystem.IsIOS())
+            if (OperatingSystem.IsAndroid() || OperatingSystem.IsIOS())
                 notifyOnHighBloodAlcohol(0.05);
             StateHasChanged();
         }
@@ -138,7 +142,7 @@ namespace AlcoholLimit.Pages
                 alcoholMetabolization = 0.017;
             }
 
-            double bloodAlcoholLevel = ((alcoholInGrams/1000) / (r * weight)) * 100 - (alcoholMetabolization * time);
+            double bloodAlcoholLevel = ((alcoholInGrams / 1000) / (r * weight)) * 100 - (alcoholMetabolization * time);
             return bloodAlcoholLevel;
         }
 

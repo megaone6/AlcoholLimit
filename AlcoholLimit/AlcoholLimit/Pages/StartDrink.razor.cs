@@ -1,4 +1,5 @@
 using AlcoholLimit.Data;
+using Microsoft.AspNetCore.Components;
 using Plugin.LocalNotification;
 using System.Diagnostics;
 
@@ -22,6 +23,7 @@ namespace AlcoholLimit.Pages
         private List<DrinkItem> drinks = new List<DrinkItem>();
         private int numberOfDrinks = 0;
         private DrinkItem selectedDrink = new DrinkItem();
+        private int selectedID;
         private double sumAlcoholGrams = 0;
 
         private void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
@@ -46,7 +48,6 @@ namespace AlcoholLimit.Pages
 
                 StateHasChanged();
             });
-            notifyOnHighBloodAlcohol(0.05); // only here for testing purposes at the moment
         }
         private void startTimer()
         {
@@ -94,14 +95,15 @@ namespace AlcoholLimit.Pages
             }
         }
 
-        private void addDrink()
+        private async void addDrink()
         {
-            Debug.WriteLine(selectedDrink.PureAlcGram);
+            selectedDrink = await DrinkDatabase.GetItemAsync(selectedID);
             numberOfDrinks++;
             sumAlcoholGrams += selectedDrink.PureAlcGram;
-            Debug.WriteLine(sumAlcoholGrams);
 
             displayBac = currentBloodAlcohol(AppState.profile.Sex, AppState.profile.Weight, elapsedSpan.TotalHours, sumAlcoholGrams, numberOfDrinks);
+            if(OperatingSystem.IsAndroid() || OperatingSystem.IsIOS())
+                notifyOnHighBloodAlcohol(0.05);
             StateHasChanged();
         }
 
@@ -137,14 +139,20 @@ namespace AlcoholLimit.Pages
                 alcoholMetabolization = 0.017;
             }
 
-            double bloodAlcoholLevel = (numberOfDrinks * (alcoholInGrams/1000) / (r * weight)) * 100 - (alcoholMetabolization * time);
+            double bloodAlcoholLevel = ((alcoholInGrams/1000) / (r * weight)) * 100 - (alcoholMetabolization * time);
             return bloodAlcoholLevel;
         }
+
         protected override async void OnInitialized()
         {
             drinks = await DrinkDatabase.GetItemsAsync();
+            selectedID = drinks[0].ID;
             StateHasChanged();
         }
-    }
 
+        private void setID(ChangeEventArgs e)
+        {
+            selectedID = int.Parse((string)e.Value);
+        }
+    }
 }

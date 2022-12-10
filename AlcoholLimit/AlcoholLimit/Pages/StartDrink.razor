@@ -14,15 +14,13 @@
 <button class="btn btn-primary" disabled="@hideComponents" @onclick="addDrink">Add drink</button>
 <p></p>
 
-<p>Blood alchohol level: @displayBac%</p>
+<p>Blood alchohol level (estimated): @displayBac%</p>
 <p></p>
 
-<select hidden="@hideComponents">
-    <option disabled hidden selected>Drinks</option>
+<select hidden="@hideComponents" @onchange="setID">
     @foreach (DrinkItem drink in drinks)
     {
-        <option>@drink.Name</option>
-        selectedDrink = drink;
+        <option value="@drink.ID">@drink.Name</option>
     }
 </select>
 

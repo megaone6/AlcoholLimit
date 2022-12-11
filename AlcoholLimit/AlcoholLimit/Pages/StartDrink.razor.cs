@@ -44,7 +44,7 @@ namespace AlcoholLimit.Pages
         {
             InvokeAsync(() =>
             {
-                displayBac = currentBloodAlcohol(AppState.profile.Sex, AppState.profile.Weight, elapsedSpan.TotalHours, sumAlcoholGrams);
+                displayBac = Math.Round(currentBloodAlcohol(AppState.profile.Sex, AppState.profile.Weight, elapsedSpan.TotalHours, sumAlcoholGrams), 4);
 
                 StateHasChanged();
             });
@@ -102,9 +102,10 @@ namespace AlcoholLimit.Pages
             ConsumedDrinkItem consumed = new ConsumedDrinkItem();
             consumed.DrinkItemID = selectedID;
             consumed.Date = DateTime.Now.Date.ToString("yyyy/MM/dd");
+            Debug.WriteLine(consumed.Date);
             await ConsumedDrinkDatabase.SaveItemAsync(consumed);
 
-            displayBac = currentBloodAlcohol(AppState.profile.Sex, AppState.profile.Weight, elapsedSpan.TotalHours, sumAlcoholGrams);
+            displayBac = Math.Round(currentBloodAlcohol(AppState.profile.Sex, AppState.profile.Weight, elapsedSpan.TotalHours, sumAlcoholGrams), 4);
             if (OperatingSystem.IsAndroid() || OperatingSystem.IsIOS())
                 notifyOnHighBloodAlcohol(0.05);
             StateHasChanged();

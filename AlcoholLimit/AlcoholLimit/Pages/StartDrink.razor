@@ -21,7 +21,7 @@
 <select hidden="@hideComponents" @onchange="setID">
     @foreach (DrinkItem drink in drinks)
     {
-        <option value="@drink.ID">@drink.Name</option>
+        <option value="@drink.ID">@drink.Name (@drink.AlcoholPercent%, @drink.Size ml)</option>
     }
 </select>
 

@@ -95,7 +95,7 @@ namespace AlcoholLimit.Pages
             StateHasChanged();
         }
 
-        private void notifyOnHighBloodAlcohol(double threshold)
+        private void notifyOnHighBloodAlcohol(float threshold)
         {
             if (displayBac >= threshold)
             {

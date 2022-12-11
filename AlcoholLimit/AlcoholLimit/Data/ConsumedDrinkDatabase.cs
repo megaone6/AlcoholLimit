@@ -26,6 +26,27 @@ namespace AlcoholLimit.Data
                 return await database.InsertAsync(item);
         }
 
+        public async Task<Dictionary<string, List<ConsumedDrinkItem>>> GetItemsByDateAsync()
+        {
+            await Init();
+            var cDrinkItems = await database.Table<ConsumedDrinkItem>().OrderByDescending<string>(x => x.Date).ToListAsync();
+            Dictionary<string, List<ConsumedDrinkItem>> retDict = new();
+            string prevKey = "";
+            foreach(var cDrinkItem in cDrinkItems) {
+                if(prevKey != cDrinkItem.Date)
+                {
+                    retDict.Add(cDrinkItem.Date, new List<ConsumedDrinkItem> {cDrinkItem});
+                    prevKey = cDrinkItem.Date;
+                }
+                else
+                {
+                    retDict[cDrinkItem.Date].Add(cDrinkItem);
+                }
+            }
+
+            return retDict;
+        }
+
         #endregion
     }
 }

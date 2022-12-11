@@ -32,6 +32,7 @@
             <th>Name</th>
             <th>Alc%</th>
             <th>ml</th>
+            <th>Remove</th>
         </tr>
     </thead>
     <tbody>
@@ -41,6 +42,7 @@
                 <td>@drink.Name</td>
                 <td>@drink.AlcoholPercent</td>
                 <td>@drink.Size</td>
+                <td><button class="btn btn-danger" @onclick="() => {deleteItem(drink);}">&#10006;</button></td>
             </tr>
         }
     </tbody>

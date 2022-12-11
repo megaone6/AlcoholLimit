@@ -16,7 +16,7 @@ else
 {
 	<button class="btn btn-primary" @onclick="ToggleAddItem">Add Item</button>
 	<button class="btn btn-primary" @onclick="Refresh">Refresh</button>
-	<button class="btn btn-primary" @onclick="DeleteAll">Delete All</button>
+	<button class="btn btn-danger" @onclick="DeleteAll">Delete All</button>
 
 	@if (drinkItemCache == null)
 	{
@@ -27,10 +27,13 @@ else
 		<table class="table">
 			<thead>
 				<tr>
-					<th>Name</th>
-					<th>Size (ml)</th>
-					<th>Alcohol%</th>
-					<th>Pure Alcohol (g)</th>
+					<th @onclick='() => {SortBy("Name");}'>Name</th>
+					<th @onclick='() => {SortBy("Size");}'>Size (ml)</th>
+					<th @onclick='() => {SortBy("Alc");}'>Alcohol (%)</th>
+					<th @onclick='() => {SortBy("Palc");}'>Pure Alcohol (g)</th>
+					<th @onclick='() => {SortBy("Cost");}'>Cost (Ft)</th>
+					<th @onclick='() => {SortBy("Cal");}'>Calories (kCal)</th>
+					<th @onclick='() => {SortBy("ID");}'>  </th>
 				</tr>
 			</thead>
 			<tbody>
@@ -41,6 +44,9 @@ else
 						<td>@drinkItem.Size</td>
 						<td>@drinkItem.AlcoholPercent</td>
 						<td>@drinkItem.PureAlcGram</td>
+						<td>@drinkItem.Cost</td>
+						<td>@drinkItem.Calories</td>
+						<td><button class="btn btn-danger" @onclick="() => {DeleteItem(drinkItem);}">&#10006;</button></td>
 					</tr>
 				}
 			</tbody>
@@ -52,6 +58,7 @@ else
 @code {
 	private List<DrinkItem> drinkItemCache;
 	private bool isAddItemMode = false;
+	private (string, bool) lastSort = ("", default);
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -80,6 +87,12 @@ else
 		DrinkDatabase.DeleteAllItemAsync();
 	}
 
+	private async void DeleteItem(DrinkItem item)
+	{
+		drinkItemCache.Remove(item);
+		DrinkDatabase.DeleteItemAsync(item);
+	}
+
 	private async Task RefreshDrinkItemCache()
 	{
 		drinkItemCache = await DrinkDatabase.GetItemsAsync();
@@ -88,6 +101,37 @@ else
 	private void ToggleAddItem()
 	{
 		isAddItemMode = !isAddItemMode;
+	}
+
+	private void SortBy(string sortByThis)
+	{
+		switch (sortByThis)
+		{
+			case "Name":
+				drinkItemCache.Sort((x, y) => lastSort.Item1 == sortByThis && lastSort.Item2 ? y.Name.CompareTo(x.Name) : x.Name.CompareTo(y.Name));
+				break;
+			case "Size":
+				drinkItemCache.Sort((x, y) => lastSort.Item1 == sortByThis && lastSort.Item2 ? y.Size.CompareTo(x.Size) : x.Size.CompareTo(y.Size));
+				break;
+			case "Alc":
+				drinkItemCache.Sort((x, y) => lastSort.Item1 == sortByThis && lastSort.Item2 ? y.AlcoholPercent.CompareTo(x.AlcoholPercent) : x.AlcoholPercent.CompareTo(y.AlcoholPercent));
+				break;
+			case "Palc":
+				drinkItemCache.Sort((x, y) => lastSort.Item1 == sortByThis && lastSort.Item2 ? y.PureAlcGram.CompareTo(x.PureAlcGram) : x.PureAlcGram.CompareTo(y.PureAlcGram));
+				break;
+			case "Cost":
+				drinkItemCache.Sort((x, y) => lastSort.Item1 == sortByThis && lastSort.Item2 ? y.Cost.CompareTo(x.Cost) : x.Cost.CompareTo(y.Cost));
+				break;
+			case "Cal":
+				drinkItemCache.Sort((x, y) => lastSort.Item1 == sortByThis && lastSort.Item2 ? y.Calories.CompareTo(x.Calories) : x.Calories.CompareTo(y.Calories));
+				break;
+			case "ID":
+				drinkItemCache.Sort((x, y) => lastSort.Item1 == sortByThis && lastSort.Item2 ? y.ID.CompareTo(x.ID) : x.ID.CompareTo(y.ID));
+				break;
+
+		}
+
+		lastSort = lastSort.Item1 == sortByThis ? (sortByThis, !lastSort.Item2) : (sortByThis, true);
 	}
 }
 

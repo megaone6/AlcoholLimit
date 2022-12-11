@@ -1,4 +1,7 @@
+using AlcoholLimit.Data;
+using Microsoft.AspNetCore.Components;
 using Plugin.LocalNotification;
+using System.Diagnostics;
 
 namespace AlcoholLimit.Pages
 {
@@ -6,7 +9,8 @@ namespace AlcoholLimit.Pages
     {
         private const string DEFAULT_TIME = "00:00:00";
 
-        private bool hideList = true;
+        private double displayBac;
+        private bool hideComponents = true;
         private bool isDrinking = false;
         private string drinkingStatus = "You have not started drinking yet.";
         private string buttonLabel = "Start drinking session";
@@ -16,32 +20,14 @@ namespace AlcoholLimit.Pages
         private DateTime startTime = DateTime.Now;
         private DateTime currentTime;
         private double elapsedsomething = 0;
-        TimeSpan elapsedSpan;
+        private TimeSpan elapsedSpan;
+        private List<DrinkItem> drinks = new List<DrinkItem>();
+        private DrinkItem selectedDrink = new DrinkItem();
+        private int selectedID;
+        private double sumAlcoholGrams = 0;
+        private List<DrinkItem> consumedDrinks = new List<DrinkItem>();
+        private List<ConsumedDrinkItem> consumedDrinkItems = new List<ConsumedDrinkItem>();
 
-        private void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
-        {
-            InvokeAsync(() =>
-            {
-                currentTime = e.SignalTime;  //.Addminutes(minute) for testing
-                elapsedTime = $"{currentTime.Subtract(startTime)}".Substring(0, 8);
-                long elapsedTicks = currentTime.Ticks - startTime.Ticks;
-                elapsedSpan = new TimeSpan(elapsedTicks);
-                elapsedsomething = elapsedSpan.TotalMinutes;
-
-                StateHasChanged();
-            });
-            
-        }
-        private void OnTimedEvent2(Object source, System.Timers.ElapsedEventArgs e)
-        {
-            InvokeAsync(() =>
-            {
-                displayBac = currentBloodAlcohol(true, 80, elapsedSpan.TotalHours, 0.014, 2);
-
-                StateHasChanged();
-            });
-            notifyOnHighBloodAlcohol(AppState.profile.bloodThreshold); // only here for testing purposes at the moment
-        }
         private void startTimer()
         {
             startTime = DateTime.Now;
@@ -53,7 +39,7 @@ namespace AlcoholLimit.Pages
             timer.Enabled = true;
             timer2.AutoReset = true;
             timer2.Enabled = true;
-            displayBac = currentBloodAlcohol(true, 80, elapsedSpan.TotalHours, 0.014, 2);
+            displayBac = 0;
             timer2.Start();
         }
 
@@ -64,30 +50,49 @@ namespace AlcoholLimit.Pages
             elapsedTime = DEFAULT_TIME;
         }
 
-        private void changeStatus()
+        private async void changeStatus()
         {
             if (isDrinking)
             {
                 isDrinking = false;
-                hideList = true;
+                hideComponents = true;
                 drinkingStatus = "You have not started drinking yet.";
                 buttonLabel = "Start drinking session";
+                displayBac = 0;
+                sumAlcoholGrams = 0;
+                foreach (ConsumedDrinkItem consumed in consumedDrinkItems)
+                {
+                    await ConsumedDrinkDatabase.SaveItemAsync(consumed);
+                    StateHasChanged();
+                }
                 stopTimer();
             }
             else
             {
                 isDrinking = true;
-                hideList = false;
+                hideComponents = false;
                 drinkingStatus = "You have started drinking.";
                 buttonLabel = "Stop drinking session";
+                consumedDrinks = new List<DrinkItem>();
                 startTimer();
-            
             }
         }
 
-        private void addDrink()
+        private async void addDrink()
         {
-            // TODO: Implement adding drink to current session and notification when reaching the threshold
+            selectedDrink = await DrinkDatabase.GetItemAsync(selectedID);
+            sumAlcoholGrams += selectedDrink.PureAlcGram;
+            consumedDrinks.Add(selectedDrink);
+            ConsumedDrinkItem consumed = new ConsumedDrinkItem();
+            consumed.DrinkItemID = selectedID;
+            consumed.Date = DateTime.Now.Date.ToString("yyyy/MM/dd");
+            consumedDrinkItems.Add(consumed);
+
+            displayBac = Math.Round(currentBloodAlcohol(AppState.profile.Sex, AppState.profile.Weight, elapsedSpan.TotalHours, sumAlcoholGrams), 4);
+
+            if (OperatingSystem.IsAndroid() || OperatingSystem.IsIOS())
+                notifyOnHighBloodAlcohol(AppState.profile.bloodThreshold);
+            StateHasChanged();
         }
 
         private void notifyOnHighBloodAlcohol(float threshold)
@@ -106,12 +111,11 @@ namespace AlcoholLimit.Pages
             }
         }
 
-        public double displayBac;
-        public double currentBloodAlcohol(bool sex, int weight, double time, double alcoholInGrams, int numberOfDrinks)
+        private double currentBloodAlcohol(sex enumerator, int weight, double time, double alcoholInGrams)
         {
             double alcoholMetabolization;
             double r; //gender constant
-            if (sex == true)
+            if (enumerator == sex.MAN)
             {
                 r = 0.68;
                 alcoholMetabolization = 0.015;
@@ -122,13 +126,52 @@ namespace AlcoholLimit.Pages
                 alcoholMetabolization = 0.017;
             }
 
-            double bloodAlcoholLevel = (numberOfDrinks * alcoholInGrams / (r * weight)) * 100 - (alcoholMetabolization * time);
+            double bloodAlcoholLevel = ((alcoholInGrams / 1000) / (r * weight)) * 100 - (alcoholMetabolization * time);
             return bloodAlcoholLevel;
         }
-        protected override void OnInitialized()
+
+        private void setID(ChangeEventArgs e)
         {
+            selectedID = int.Parse((string)e.Value);
+        }
+
+        private void deleteItem(DrinkItem drink)
+        {
+            sumAlcoholGrams -= selectedDrink.PureAlcGram;
+            displayBac = Math.Max(0, Math.Round(currentBloodAlcohol(AppState.profile.Sex, AppState.profile.Weight, elapsedSpan.TotalHours, sumAlcoholGrams), 4));
+            consumedDrinkItems.RemoveAt(consumedDrinks.IndexOf(drink));
+            consumedDrinks.Remove(drink);
+        }
+
+        protected override async void OnInitialized()
+        {
+            drinks = await DrinkDatabase.GetItemsAsync();
+            selectedID = drinks[0].ID;
+            StateHasChanged();
+        }
+
+        private void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
+        {
+            InvokeAsync(() =>
+            {
+                currentTime = e.SignalTime;  //.Addminutes(minute) for testing
+                elapsedTime = $"{currentTime.Subtract(startTime)}".Substring(0, 8);
+                long elapsedTicks = currentTime.Ticks - startTime.Ticks;
+                elapsedSpan = new TimeSpan(elapsedTicks);
+                elapsedsomething = elapsedSpan.TotalMinutes;
+
+                StateHasChanged();
+            });
 
         }
-    }
+        private void OnTimedEvent2(Object source, System.Timers.ElapsedEventArgs e)
+        {
+            InvokeAsync(() =>
+            {
+                displayBac = Math.Round(currentBloodAlcohol(AppState.profile.Sex, AppState.profile.Weight, elapsedSpan.TotalHours, sumAlcoholGrams), 4);
 
+                StateHasChanged();
+            });
+        }
+    }
 }

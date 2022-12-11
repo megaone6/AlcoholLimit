@@ -1,8 +1,11 @@
 ﻿@page "/"
 @using AlcoholLimit.Data
+@using System.Diagnostics
 @inject NavigationManager UriHelper
 @inject ProfileDatabase pd
 @inject AppState AppState
+@inject ConsumedDrinkDatabase ConsumedDrinkDatabase
+@inject DrinkDatabase DrinkDatabase
 
 
 @if (stored_profile == null)
@@ -120,13 +123,27 @@ else
 
 	}
 
-	private void login()
+	private async void login()
 	{
 		errors = "";
 		if (profile.Password == stored_profile.Password & profile.Email == stored_profile.Email)
 		{
+			int totalCost = 0;
+			int totalCalories = 0;
 			AppState.SetProfile(stored_profile);
 			UriHelper.NavigateTo("/startdrink");
+			List<ConsumedDrinkItem> list = await ConsumedDrinkDatabase.GetItemsAsync();
+			list.Reverse();
+			if (AppState.profile.weeklyNot)
+			{
+				foreach (ConsumedDrinkItem cdi in list) if ((DateTime.Now - DateTime.Parse(cdi.Date)).TotalDays < 8)
+				{
+					DrinkItem drink = await DrinkDatabase.GetItemAsync(cdi.DrinkItemID);
+					totalCost += drink.Cost;
+					totalCalories += drink.Calories;
+				}
+				Debug.WriteLine("Cost: " + totalCost + " Calories: " + totalCalories);
+			}
 		}
 		else
 			errors = "User not found!";

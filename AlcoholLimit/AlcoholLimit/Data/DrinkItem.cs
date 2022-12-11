@@ -16,6 +16,7 @@ namespace AlcoholLimit.Data
         public double AlcoholPercent { get; set; }
         public int Cost { get; set; } //In HUF
         public int Calories { get; set; } //In kCal
+        public bool IsDeleted { get; set; }
         public double PureAlcGram => Math.Round(Size * (AlcoholPercent / 100) * 0.78945, 3);
     }
 }

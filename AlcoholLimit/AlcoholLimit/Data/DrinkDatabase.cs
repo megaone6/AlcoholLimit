@@ -9,25 +9,37 @@ namespace AlcoholLimit.Data
         public async Task<List<DrinkItem>> GetItemsStandardDrinkAsync()
         {
             await Init();
-            return await database.Table<DrinkItem>().Where(t => t.PureAlcGram > 1).ToListAsync();
+            return await database.Table<DrinkItem>().Where(i => !i.IsDeleted && i.PureAlcGram > 1).ToListAsync();
+        }
+
+        public override async Task<List<DrinkItem>> GetItemsAsync()
+        {
+            await Init();
+            return await database.Table<DrinkItem>().Where(i => !i.IsDeleted).ToListAsync();
+        }
+        
+        public async Task<List<DrinkItem>> GetItemsWithDeletedAsync()
+        {
+            await Init();
+            return await database.Table<DrinkItem>().ToListAsync();
         }
 
         public override async Task<DrinkItem> GetItemAsync(int id)
         {
             await Init();
-            return await database.Table<DrinkItem>().Where(i => i.ID == id).FirstOrDefaultAsync();
+            return await database.Table<DrinkItem>().Where(i => !i.IsDeleted && i.ID == id).FirstOrDefaultAsync();
         }
 
         public override async Task<DrinkItem> GetItemAsync(string name)
         {
             await Init();
-            return await database.Table<DrinkItem>().Where(i => i.Name == name).FirstOrDefaultAsync();
+            return await database.Table<DrinkItem>().Where(i => !i.IsDeleted && i.Name == name).FirstOrDefaultAsync();
         }
 
-        public async Task<List<DrinkItem>> GetItemsFromIdSetAsync(HashSet<int> idSet)
+        public async Task<List<DrinkItem>> GetItemsFromIdSetAsync(HashSet<int> idSet, bool includeDeleted)
         {
             await Init();
-            return await database.Table<DrinkItem>().Where(i => idSet.Contains(i.ID)).ToListAsync();
+            return await database.Table<DrinkItem>().Where(i => (includeDeleted || !includeDeleted && !i.IsDeleted) && idSet.Contains(i.ID)).ToListAsync();
         }
 
         public override async Task<int> SaveItemAsync(DrinkItem item)
@@ -38,6 +50,27 @@ namespace AlcoholLimit.Data
             else
                 return await database.InsertAsync(item);
         }
+         
+        public override async Task<int> DeleteItemAsync(DrinkItem item)
+        {
+            await Init();
+            item.IsDeleted = true;
+            return await database.UpdateAsync(item);
+        }
+
+        public virtual async Task<int> DeleteAllItemAsync()
+        {
+            await Init();
+            List<DrinkItem> dIs = await database.Table<DrinkItem>().ToListAsync();
+            foreach (DrinkItem item in dIs)
+            {
+                item.IsDeleted = true;
+            }
+            var result = await database.UpdateAllAsync(dIs);
+            AddDefaultItems();
+            return result;
+        }
+
         public async Task<List<DrinkItem>> GetDefaultItemsAsync()
         {
             List<DrinkItem> items = new List<DrinkItem>();

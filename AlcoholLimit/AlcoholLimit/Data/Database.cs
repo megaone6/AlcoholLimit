@@ -29,7 +29,7 @@ namespace AlcoholLimit.Data
 
         #region Public methods
 
-        public async Task<List<T>> GetItemsAsync()
+        public virtual async Task<List<T>> GetItemsAsync()
         {
             await Init();
             return await database.Table<T>().ToListAsync();
@@ -41,13 +41,13 @@ namespace AlcoholLimit.Data
 
         public abstract Task<int> SaveItemAsync(T item);
 
-        public async Task<int> DeleteItemAsync(T item)
+        public virtual async Task<int> DeleteItemAsync(T item)
         {
             await Init();
             return await database.DeleteAsync(item);
         }
 
-        public async Task<int> DeleteAllItemAsync()
+        public virtual async Task<int> DeleteAllItemAsync()
         {
             await Init();
             var result = await database.DeleteAllAsync<T>();

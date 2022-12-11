@@ -146,7 +146,10 @@ namespace AlcoholLimit.Pages
         protected override async void OnInitialized()
         {
             drinks = await DrinkDatabase.GetItemsAsync();
+            if(drinks.Count > 0)
+            {
             selectedID = drinks[0].ID;
+            }
             StateHasChanged();
         }
 

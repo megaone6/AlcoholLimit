@@ -79,7 +79,7 @@ else
 		}
 
 		drinkItemMap.Clear();
-		List<DrinkItem> drinkItems = await DrinkDatabase.GetItemsFromIdSetAsync(drinkItemIds);
+		List<DrinkItem> drinkItems = await DrinkDatabase.GetItemsFromIdSetAsync(drinkItemIds, true);
 		foreach (var drinkItem in drinkItems) 
 		{
 			drinkItemMap.Add(drinkItem.ID, drinkItem);

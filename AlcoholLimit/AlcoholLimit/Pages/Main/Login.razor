@@ -122,14 +122,14 @@ else
 
 	private void login()
 	{
-		//errors = "";
-		//if (profile.Password == stored_profile.Password & profile.Email == stored_profile.Email)
-		//{
+		errors = "";
+		if (profile.Password == stored_profile.Password & profile.Email == stored_profile.Email)
+		{
 			AppState.SetProfile(stored_profile);
 			UriHelper.NavigateTo("/startdrink");
-		//}
-		//else
-		//	errors = "User not found!";
+		}
+		else
+			errors = "User not found!";
 	}
 
 	private bool IsValidEmail(string email)

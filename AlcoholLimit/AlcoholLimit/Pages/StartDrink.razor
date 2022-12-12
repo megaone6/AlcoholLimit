@@ -27,10 +27,11 @@ else
     {
         <button class="btn btn-primary" @onclick="changeStatus">Start drinking session</button>
     }
+
     <button class="btn btn-primary" style="margin-left:0.1em;" disabled="@AppState.hideComponents" @onclick="ToggleAddItem">Add new custom drink</button>
     <p></p>
 
-    <p>Blood alchohol level (estimated): @displayBac%</p>
+    <p>Blood alchohol level (estimated): @bacCategory (@displayBac%)</p>
     <p></p>
 
     <div hidden="@AppState.hideComponents">
@@ -66,4 +67,9 @@ else
             }
         </tbody>
     </table>
+
+    <div hidden="@AppState.isDrinking" class="mb-3">
+        <label for="test-date" class="form-label">Current Date</label>
+        <input min="20" @bind="currDate" class="form-control" id="test-date" placeholder="e.g. 2022.12.05. (leave empty for the current date)">
+    </div>
 }

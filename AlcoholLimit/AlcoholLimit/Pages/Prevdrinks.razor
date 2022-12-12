@@ -29,7 +29,8 @@ else
 						<th>Name</th>
 						<th>Size (ml)</th>
 						<th>Alcohol%</th>
-						<th>Pure Alcohol (g)</th>
+						<th>Cost (Ft)</th>
+						<th>Calories (kCal)</th>
 						<th></th>
 					</tr>
 				</thead>
@@ -42,7 +43,8 @@ else
 								<td>@drinkItemMap[drinkItem.DrinkItemID].Name</td>
 								<td>@drinkItemMap[drinkItem.DrinkItemID].Size</td>
 								<td>@drinkItemMap[drinkItem.DrinkItemID].AlcoholPercent</td>
-								<td>@drinkItemMap[drinkItem.DrinkItemID].PureAlcGram</td>
+								<td>@drinkItemMap[drinkItem.DrinkItemID].Cost</td>
+								<td>@drinkItemMap[drinkItem.DrinkItemID].Calories</td>
 								<td><button class="btn btn-danger" @onclick="() => {DeleteItem(drinkItemKey, drinkItem);}">&#10006;</button></td>
 							}
 						</tr>

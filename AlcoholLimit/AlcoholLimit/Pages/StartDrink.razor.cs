@@ -1,6 +1,8 @@
 using AlcoholLimit.Data;
+using AlcoholLimit.Pages.Main;
 using Microsoft.AspNetCore.Components;
 using Plugin.LocalNotification;
+using System;
 using System.Diagnostics;
 
 namespace AlcoholLimit.Pages
@@ -8,6 +10,22 @@ namespace AlcoholLimit.Pages
     public partial class StartDrink
     {
         private const string DEFAULT_TIME = "00:00:00";
+        
+        private const string BAC_CAT_NONE = "None";
+        private const string BAC_CAT_ALMOST_NONE = "Almost none";
+        private const string BAC_CAT_VERY_LOW = "Very low";
+        private const string BAC_CAT_LOW = "Low";
+        private const string BAC_CAT_MED = "Medium";
+        private const string BAC_CAT_HIGH = "High";
+        private const string BAC_CAT_VERY_HIGH = "Very High";
+
+        private const double BAC_THRESH_NONE = 0.01;
+        private const double BAC_THRESH_VERY_LOW = 0.06;
+        private const double BAC_THRESH_LOW = 0.1;
+        private const double BAC_THRESH_MED = 0.2;
+        private const double BAC_THRESH_HIGH = 0.3;
+        private const double BAC_THRESH_VERY_HIGH = 0.45;
+
 
         private bool recalBac = false;
         private bool isAddItemMode = false;
@@ -23,6 +41,8 @@ namespace AlcoholLimit.Pages
         private int selectedID;
         private double sumAlcoholGrams = 0;
         private List<ConsumedDrinkItem> consumedDrinkItems = new List<ConsumedDrinkItem>();
+        private string currDate = "";
+        private string bacCategory = BAC_CAT_NONE;
 
         private void startTimer(bool calledFromInit = false)
         {
@@ -87,10 +107,17 @@ namespace AlcoholLimit.Pages
             AppState.consumedDrinks.Add(drinkItem);
             ConsumedDrinkItem consumed = new ConsumedDrinkItem();
             consumed.DrinkItemID = drinkItem.ID;
-            consumed.Date = DateTime.Now.Date.ToString("yyyy/MM/dd");
+            DateTime tmpDate;
+            if(!DateTime.TryParse(currDate, out tmpDate))
+            {
+                tmpDate = DateTime.Now;
+            }
+            consumed.Date = tmpDate.ToString("yyyy/MM/dd");
             consumedDrinkItems.Add(consumed);
 
             displayBac = Math.Round(currentBloodAlcohol(AppState.profile.Sex, AppState.profile.Weight, elapsedSpan.TotalHours, sumAlcoholGrams), 4);
+            calculateBacCategoryText();
+
 
             if (OperatingSystem.IsAndroid() || OperatingSystem.IsIOS())
                 notifyOnHighBloodAlcohol(AppState.profile.bloodThreshold);
@@ -100,6 +127,37 @@ namespace AlcoholLimit.Pages
         private void ToggleAddItem()
         {
             isAddItemMode = !isAddItemMode;
+        }
+        private void calculateBacCategoryText()
+        {
+            if (displayBac >= BAC_THRESH_VERY_HIGH)
+            {
+                bacCategory = BAC_CAT_VERY_HIGH;
+            }
+            else if (displayBac >= BAC_THRESH_HIGH)
+            {
+                bacCategory = BAC_CAT_HIGH;
+            }
+            else if (displayBac >= BAC_THRESH_MED)
+            {
+                bacCategory = BAC_CAT_MED;
+            }
+            else if (displayBac >= BAC_THRESH_LOW)
+            {
+                bacCategory = BAC_CAT_LOW;
+            }
+            else if (displayBac >= BAC_THRESH_VERY_LOW)
+            {
+                bacCategory = BAC_CAT_VERY_LOW;
+            }
+            else if (displayBac >= BAC_THRESH_NONE)
+            {
+                bacCategory = BAC_CAT_ALMOST_NONE;
+            }
+            else
+            {
+                bacCategory = BAC_CAT_NONE;
+            }
         }
 
         private async Task AddItem(DrinkItem item)
@@ -156,6 +214,7 @@ namespace AlcoholLimit.Pages
             displayBac = Math.Max(0, Math.Round(currentBloodAlcohol(AppState.profile.Sex, AppState.profile.Weight, elapsedSpan.TotalHours, sumAlcoholGrams), 4));
             consumedDrinkItems.RemoveAt(AppState.consumedDrinks.IndexOf(drink));
             AppState.consumedDrinks.Remove(drink);
+            calculateBacCategoryText();
         }
 
         protected override async void OnInitialized()
@@ -194,6 +253,7 @@ namespace AlcoholLimit.Pages
                 {
                     displayBac = Math.Max(0, Math.Round(currentBloodAlcohol(AppState.profile.Sex, AppState.profile.Weight, elapsedSpan.TotalHours, sumAlcoholGrams), 4));
                     recalBac = false;
+                    calculateBacCategoryText();
                 }
 
                 StateHasChanged();

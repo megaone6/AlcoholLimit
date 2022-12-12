@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using AlcoholLimit.Data
-@using Plugin.LocalNotification;
+@using Plugin.LocalNotification
+@using System.Diagnostics
 @inject NavigationManager UriHelper
 @inject ProfileDatabase pd
 @inject AppState AppState
@@ -35,7 +36,7 @@ else
 		</div>
 		<div class="mb-3">
 			<label for="exampleFormControlInput1" class="form-label">Latest weekly</label>
-			<input min="20" required @bind="profile.latestWeekly" class="form-control" id="exampleFormControlInput1" placeholder="2022.12.05.">
+			<input min="20" required @bind="profile.latestWeekly" class="form-control" id="exampleFormControlInput1" placeholder="e.g. 2022.12.05. (leave empty for the current date)">
 		</div>
 		<div class="mb-3">
 			<label for="exampleFormControlInput1" class="form-label">Sex</label>
@@ -116,6 +117,9 @@ else
 		if (IsValidEmail(profile.Email) & profile.Password.Length > 5)
 		{
 			await pd.SaveItemAsync(profile);
+			DateTime dateTime;
+			if (!DateTime.TryParse(profile.latestWeekly, out dateTime))
+				profile.latestWeekly = DateTime.Now.Date.ToString();
 			stored_profile = profile;
 			profile = new ProfileItem();
 			profile.ID = -1;
@@ -133,6 +137,7 @@ else
 		if (profile.Password == stored_profile.Password & profile.Email == stored_profile.Email)
 		{
 			AppState.SetProfile(stored_profile);
+			Debug.WriteLine(AppState.profile.latestWeekly);
 			string latest = AppState.profile.latestWeekly;
 			UriHelper.NavigateTo("/startdrink");
 

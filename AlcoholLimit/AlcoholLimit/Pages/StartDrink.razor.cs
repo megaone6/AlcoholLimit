@@ -9,28 +9,27 @@ namespace AlcoholLimit.Pages
     {
         private const string DEFAULT_TIME = "00:00:00";
 
+        private bool recalBac = false;
+        private bool isAddItemMode = false;
         private double displayBac;
-        private bool hideComponents = true;
-        private bool isDrinking = false;
         private string drinkingStatus = "You have not started drinking yet.";
-        private string buttonLabel = "Start drinking session";
         private string elapsedTime = DEFAULT_TIME;
         private System.Timers.Timer timer;
         private System.Timers.Timer timer2;
-        private DateTime startTime = DateTime.Now;
         private DateTime currentTime;
         private double elapsedsomething = 0;
         private TimeSpan elapsedSpan;
         private List<DrinkItem> drinks = new List<DrinkItem>();
-        private DrinkItem selectedDrink = new DrinkItem();
         private int selectedID;
         private double sumAlcoholGrams = 0;
-        private List<DrinkItem> consumedDrinks = new List<DrinkItem>();
         private List<ConsumedDrinkItem> consumedDrinkItems = new List<ConsumedDrinkItem>();
 
-        private void startTimer()
+        private void startTimer(bool calledFromInit = false)
         {
-            startTime = DateTime.Now;
+            if (!calledFromInit)
+            {
+                AppState.startTime = DateTime.Now;
+            }
             timer = new System.Timers.Timer(1);
             timer2 = new System.Timers.Timer(1800000);
             timer.Elapsed += OnTimedEvent;
@@ -52,12 +51,11 @@ namespace AlcoholLimit.Pages
 
         private async void changeStatus()
         {
-            if (isDrinking)
+            if (AppState.isDrinking)
             {
-                isDrinking = false;
-                hideComponents = true;
+                AppState.isDrinking = false;
+                AppState.consumedDrinks.Clear();
                 drinkingStatus = "You have not started drinking yet.";
-                buttonLabel = "Start drinking session";
                 displayBac = 0;
                 sumAlcoholGrams = 0;
                 foreach (ConsumedDrinkItem consumed in consumedDrinkItems)
@@ -69,22 +67,26 @@ namespace AlcoholLimit.Pages
             }
             else
             {
-                isDrinking = true;
-                hideComponents = false;
+                AppState.isDrinking = true;
                 drinkingStatus = "You have started drinking.";
-                buttonLabel = "Stop drinking session";
-                consumedDrinks = new List<DrinkItem>();
+                AppState.consumedDrinks = new List<DrinkItem>();
                 startTimer();
             }
         }
 
-        private async void addDrink()
+        private async void addSelectedDrink()
         {
-            selectedDrink = await DrinkDatabase.GetItemAsync(selectedID);
-            sumAlcoholGrams += selectedDrink.PureAlcGram;
-            consumedDrinks.Add(selectedDrink);
+            DrinkItem selectedDrink = await DrinkDatabase.GetItemAsync(selectedID);
+
+            addDrink(selectedDrink);
+        }
+
+        private async void addDrink(DrinkItem drinkItem)
+        {
+            sumAlcoholGrams += drinkItem.PureAlcGram;
+            AppState.consumedDrinks.Add(drinkItem);
             ConsumedDrinkItem consumed = new ConsumedDrinkItem();
-            consumed.DrinkItemID = selectedID;
+            consumed.DrinkItemID = drinkItem.ID;
             consumed.Date = DateTime.Now.Date.ToString("yyyy/MM/dd");
             consumedDrinkItems.Add(consumed);
 
@@ -93,6 +95,19 @@ namespace AlcoholLimit.Pages
             if (OperatingSystem.IsAndroid() || OperatingSystem.IsIOS())
                 notifyOnHighBloodAlcohol(AppState.profile.bloodThreshold);
             StateHasChanged();
+        }
+
+        private void ToggleAddItem()
+        {
+            isAddItemMode = !isAddItemMode;
+        }
+
+        private async Task AddItem(DrinkItem item)
+        {
+            await DrinkDatabase.SaveItemAsync(item);
+            addDrink(item);
+            drinks.Add(item);
+            isAddItemMode = false;
         }
 
         private void notifyOnHighBloodAlcohol(float threshold)
@@ -137,18 +152,30 @@ namespace AlcoholLimit.Pages
 
         private void deleteItem(DrinkItem drink)
         {
-            sumAlcoholGrams -= selectedDrink.PureAlcGram;
+            sumAlcoholGrams -= drink.PureAlcGram;
             displayBac = Math.Max(0, Math.Round(currentBloodAlcohol(AppState.profile.Sex, AppState.profile.Weight, elapsedSpan.TotalHours, sumAlcoholGrams), 4));
-            consumedDrinkItems.RemoveAt(consumedDrinks.IndexOf(drink));
-            consumedDrinks.Remove(drink);
+            consumedDrinkItems.RemoveAt(AppState.consumedDrinks.IndexOf(drink));
+            AppState.consumedDrinks.Remove(drink);
         }
 
         protected override async void OnInitialized()
         {
+            if (AppState.isDrinking)
+            {
+                recalBac = true;
+                startTimer(true);
+
+                sumAlcoholGrams = 0;
+                foreach (var di in AppState.consumedDrinks)
+                {
+                    sumAlcoholGrams += di.PureAlcGram;
+                }
+            }
+
             drinks = await DrinkDatabase.GetItemsAsync();
             if(drinks.Count > 0)
             {
-            selectedID = drinks[0].ID;
+                selectedID = drinks[0].ID;
             }
             StateHasChanged();
         }
@@ -158,10 +185,16 @@ namespace AlcoholLimit.Pages
             InvokeAsync(() =>
             {
                 currentTime = e.SignalTime;  //.Addminutes(minute) for testing
-                elapsedTime = $"{currentTime.Subtract(startTime)}".Substring(0, 8);
-                long elapsedTicks = currentTime.Ticks - startTime.Ticks;
+                elapsedTime = $"{currentTime.Subtract(AppState.startTime)}".Substring(0, 8);
+                long elapsedTicks = currentTime.Ticks - AppState.startTime.Ticks;
                 elapsedSpan = new TimeSpan(elapsedTicks);
                 elapsedsomething = elapsedSpan.TotalMinutes;
+
+                if (recalBac)
+                {
+                    displayBac = Math.Max(0, Math.Round(currentBloodAlcohol(AppState.profile.Sex, AppState.profile.Weight, elapsedSpan.TotalHours, sumAlcoholGrams), 4));
+                    recalBac = false;
+                }
 
                 StateHasChanged();
             });

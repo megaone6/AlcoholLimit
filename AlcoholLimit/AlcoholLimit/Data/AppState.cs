@@ -10,6 +10,16 @@ namespace AlcoholLimit.Data
     {
         public ProfileItem profile;
 
+        public bool isDrinking = false;
+        public bool hideComponents { 
+            get
+            {
+                return !isDrinking;
+            }
+        }
+        public List<DrinkItem> consumedDrinks = new List<DrinkItem>();
+        public DateTime startTime = DateTime.Now;
+
         public AppState()
         {
             ProfileItem p = new ProfileItem();

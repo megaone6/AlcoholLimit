@@ -4,46 +4,66 @@
 @inject AppState AppState
 @inject ConsumedDrinkDatabase ConsumedDrinkDatabase
 
-<UpperMenu />
-
+<UpperMenu/>
 <h1>Start drinking</h1>
 
-<p role="status" style="text-align:center;font-size:200%"><b>@drinkingStatus</b></p>
-<p>Elapsed time: @elapsedTime</p>
+@if (isAddItemMode)
+{
+	<AlcoholLimit.Components.FDRecordForm 
+		OnDrinkItemSubmitted="@AddItem"
+		OnCanceled="@ToggleAddItem"
+	/>
+}
+else 
+{
+    <p role="status" style="text-align:center;font-size:200%"><b>@drinkingStatus</b></p>
+    <p>Elapsed time: @elapsedTime</p>
 
-<button class="btn btn-primary" @onclick="changeStatus">@buttonLabel</button>
-<button class="btn btn-primary" disabled="@hideComponents" @onclick="addDrink">Add drink</button>
-<p></p>
-
-<p>Blood alchohol level (estimated): @displayBac%</p>
-<p></p>
-
-<select hidden="@hideComponents" @onchange="setID">
-    @foreach (DrinkItem drink in drinks)
+    @if(@AppState.isDrinking)
     {
-        <option value="@drink.ID">@drink.Name (@drink.AlcoholPercent%, @drink.Size ml)</option>
+        <button class="btn btn-danger" @onclick="changeStatus">Stop drinking session</button>
+    } 
+    else 
+    {
+        <button class="btn btn-primary" @onclick="changeStatus">Start drinking session</button>
     }
-</select>
+    <button class="btn btn-primary" style="margin-left:0.1em;" disabled="@AppState.hideComponents" @onclick="ToggleAddItem">Add new custom drink</button>
+    <p></p>
 
-<p style="font-size:130%" hidden="@hideComponents">Drinks in current session: </p>
-<table class="table" hidden="@hideComponents">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Alc%</th>
-            <th>ml</th>
-            <th>Remove</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (DrinkItem drink in consumedDrinks)
-        {
+    <p>Blood alchohol level (estimated): @displayBac%</p>
+    <p></p>
+
+    <div hidden="@AppState.hideComponents">
+        <select @onchange="setID">
+            @foreach (DrinkItem drink in drinks)
+            {
+                <option value="@drink.ID">@drink.Name (@drink.AlcoholPercent%, @drink.Size ml)</option>
+            }
+        </select>
+        <button class="btn btn-sm btn-primary" style="margin-left:0.1em;" disabled="@AppState.hideComponents" @onclick="addSelectedDrink">Add this drink</button>
+    </div>
+
+
+    <p style="font-size:130%" hidden="@AppState.hideComponents">Drinks in current session: </p>
+    <table class="table" hidden="@AppState.hideComponents">
+        <thead>
             <tr>
-                <td>@drink.Name</td>
-                <td>@drink.AlcoholPercent</td>
-                <td>@drink.Size</td>
-                <td><button class="btn btn-danger" @onclick="() => {deleteItem(drink);}">&#10006;</button></td>
+                <th>Name</th>
+                <th>Alc%</th>
+                <th>ml</th>
+                <th>Remove</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (DrinkItem drink in AppState.consumedDrinks)
+            {
+                <tr>
+                    <td>@drink.Name</td>
+                    <td>@drink.AlcoholPercent</td>
+                    <td>@drink.Size</td>
+                    <td><button class="btn btn-danger" @onclick="() => {deleteItem(drink);}">&#10006;</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

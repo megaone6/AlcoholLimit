@@ -73,33 +73,95 @@ namespace AlcoholLimit.Data
 
         public async Task<List<DrinkItem>> GetDefaultItemsAsync()
         {
-            List<DrinkItem> items = new List<DrinkItem>();
-            items.Add(
-                new DrinkItem
-                {
-                    Name = "Sörike",
-                    Size = 500,
-                    AlcoholPercent = 4,
-                    Cost = 1200,
-                    Calories = 200
-                });
-            return items;
+            return GenerateDefaultItems();
         }
 
         #endregion
 
         protected override void AddDefaultItems()
         {
-            DrinkItem item = new DrinkItem
+            foreach (var drinkItem in GenerateDefaultItems())
             {
-                Name = "Sörike",
-                Size = 500,
-                AlcoholPercent = 4,
-                Cost = 1200,
-                Calories = 200
-            };
+                _ = SaveItemAsync(drinkItem);
+            }
+        }
 
-            _ = SaveItemAsync(item);
+        private List<DrinkItem> GenerateDefaultItems()
+        {
+            return new List<DrinkItem>() { 
+                new DrinkItem
+                {
+                    Name = "Red Wine",
+                    Size = 100,
+                    AlcoholPercent = 13,
+                    Cost = 1500,
+                    Calories = 200
+                },
+                new DrinkItem
+                {
+                    Name = "White Wine",
+                    Size = 100,
+                    AlcoholPercent = 11.5,
+                    Cost = 1000,
+                    Calories = 200
+                },
+                new DrinkItem
+                {
+                    Name = "Lager Beer",
+                    Size = 500,
+                    AlcoholPercent = 4.5,
+                    Cost = 500,
+                    Calories = 200
+                },
+                new DrinkItem
+                {
+                    Name = "Lager Beer",
+                    Size = 330,
+                    AlcoholPercent = 4.5,
+                    Cost = 420,
+                    Calories = 200
+                },
+                new DrinkItem
+                {
+                    Name = "IPA Beer",
+                    Size = 500,
+                    AlcoholPercent = 6,
+                    Cost = 800,
+                    Calories = 200
+                },
+                new DrinkItem
+                {
+                    Name = "IPA Beer",
+                    Size = 330,
+                    AlcoholPercent = 6,
+                    Cost = 630,
+                    Calories = 200
+                },
+                new DrinkItem
+                {
+                    Name = "Vodka",
+                    Size = 50,
+                    AlcoholPercent = 40,
+                    Cost = 1000,
+                    Calories = 200
+                },
+                new DrinkItem
+                {
+                    Name = "Rum",
+                    Size = 50,
+                    AlcoholPercent = 40,
+                    Cost = 1200,
+                    Calories = 200
+                },
+                new DrinkItem
+                {
+                    Name = "Whisky",
+                    Size = 50,
+                    AlcoholPercent = 40,
+                    Cost = 1300,
+                    Calories = 200
+                }
+            };
         }
     }
 }

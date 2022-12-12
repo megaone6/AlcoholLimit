@@ -1,6 +1,7 @@
 ﻿@page "/drink"
 
 @using AlcoholLimit.Data
+@inject AppState AppState
 @inject DrinkDatabase DrinkDatabase
 <UpperMenu/>
 <h1>Drink Database</h1>
@@ -24,7 +25,7 @@ else
 	}
 	else
 	{
-		<table class="table">
+		<table class="table @(AppState.profile.nightmode ? "nightmode" : "")">
 			<thead>
 				<tr>
 					<th @onclick='() => {SortBy("Name");}'>Name</th>

@@ -26,24 +26,25 @@
 </select>
 
 <p style="font-size:130%" hidden="@hideComponents">Drinks in current session: </p>
-<table class="table" hidden="@hideComponents">
+<table class="table @(AppState.profile.nightmode ? "nightmode" : "")"  hidden="@hideComponents">
+
     <thead>
-        <tr>
-            <th>Name</th>
-            <th>Alc%</th>
-            <th>ml</th>
-            <th>Remove</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (DrinkItem drink in consumedDrinks)
-        {
             <tr>
-                <td>@drink.Name</td>
-                <td>@drink.AlcoholPercent</td>
-                <td>@drink.Size</td>
-                <td><button class="btn btn-danger" @onclick="() => {deleteItem(drink);}">&#10006;</button></td>
+                <th>Name</th>
+                <th>Alc%</th>
+                <th>ml</th>
+                <th>Remove</th>
             </tr>
-        }
-    </tbody>
+        </thead>
+        <tbody>
+            @foreach (DrinkItem drink in consumedDrinks)
+            {
+                <tr>
+                    <td>@drink.Name</td>
+                    <td>@drink.AlcoholPercent</td>
+                    <td>@drink.Size</td>
+                    <td><button class="btn btn-danger" @onclick="() => {deleteItem(drink);}">&#10006;</button></td>
+                </tr>
+            }
+        </tbody>
 </table>

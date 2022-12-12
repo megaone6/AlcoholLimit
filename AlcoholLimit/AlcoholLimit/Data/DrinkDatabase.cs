@@ -95,7 +95,7 @@ namespace AlcoholLimit.Data
                     Size = 100,
                     AlcoholPercent = 13,
                     Cost = 1500,
-                    Calories = 200
+                    Calories = 85
                 },
                 new DrinkItem
                 {
@@ -103,7 +103,7 @@ namespace AlcoholLimit.Data
                     Size = 100,
                     AlcoholPercent = 11.5,
                     Cost = 1000,
-                    Calories = 200
+                    Calories = 80
                 },
                 new DrinkItem
                 {
@@ -111,7 +111,7 @@ namespace AlcoholLimit.Data
                     Size = 500,
                     AlcoholPercent = 4.5,
                     Cost = 500,
-                    Calories = 200
+                    Calories = 170
                 },
                 new DrinkItem
                 {
@@ -119,7 +119,7 @@ namespace AlcoholLimit.Data
                     Size = 330,
                     AlcoholPercent = 4.5,
                     Cost = 420,
-                    Calories = 200
+                    Calories = 120
                 },
                 new DrinkItem
                 {
@@ -127,7 +127,7 @@ namespace AlcoholLimit.Data
                     Size = 500,
                     AlcoholPercent = 6,
                     Cost = 800,
-                    Calories = 200
+                    Calories = 235
                 },
                 new DrinkItem
                 {
@@ -135,7 +135,7 @@ namespace AlcoholLimit.Data
                     Size = 330,
                     AlcoholPercent = 6,
                     Cost = 630,
-                    Calories = 200
+                    Calories = 150
                 },
                 new DrinkItem
                 {
@@ -143,7 +143,7 @@ namespace AlcoholLimit.Data
                     Size = 50,
                     AlcoholPercent = 40,
                     Cost = 1000,
-                    Calories = 200
+                    Calories = 105
                 },
                 new DrinkItem
                 {
@@ -151,7 +151,7 @@ namespace AlcoholLimit.Data
                     Size = 50,
                     AlcoholPercent = 40,
                     Cost = 1200,
-                    Calories = 200
+                    Calories = 120
                 },
                 new DrinkItem
                 {
@@ -159,7 +159,7 @@ namespace AlcoholLimit.Data
                     Size = 50,
                     AlcoholPercent = 40,
                     Cost = 1300,
-                    Calories = 200
+                    Calories = 125
                 }
             };
         }

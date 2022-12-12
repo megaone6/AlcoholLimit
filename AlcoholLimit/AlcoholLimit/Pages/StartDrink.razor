@@ -45,7 +45,7 @@ else
 
 
     <p style="font-size:130%" hidden="@AppState.hideComponents">Drinks in current session: </p>
-    <table class="table" hidden="@AppState.hideComponents">
+    <table class="table @(AppState.profile.nightmode ? "nightmode" : "")" hidden="@AppState.hideComponents">
         <thead>
             <tr>
                 <th>Name</th>

@@ -21,5 +21,6 @@ namespace AlcoholLimit.Data
         public bool weeklyNot { get; set; }
         public bool thresholdNot { get; set; }
         public float bloodThreshold { get; set; }
+        public string latestWeekly { get; set; }
     }
 }

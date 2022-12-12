@@ -1,6 +1,7 @@
 ﻿@using AlcoholLimit.Data
 @inject ConsumedDrinkDatabase ConsumedDrinkDatabase
 @inject DrinkDatabase DrinkDatabase
+@inject AppState AppState
 
 
 @page "/prevdrinks"
@@ -22,25 +23,27 @@ else
 		{
 			<h2>@drinkItemKey</h2>
 
-			<table class="table">
+			<table class="table @(AppState.profile.nightmode ? "nightmode" : "")">
 				<thead>
 					<tr>
 						<th>Name</th>
 						<th>Size (ml)</th>
 						<th>Alcohol%</th>
 						<th>Pure Alcohol (g)</th>
+						<th></th>
 					</tr>
 				</thead>
 				<tbody>
 					@foreach (var drinkItem in cDrinkItemCache[drinkItemKey])
 					{
 						<tr>
-							@if(drinkItemMap.TryGetValue(drinkItem.ID, out _))
+							@if (drinkItemMap.TryGetValue(drinkItem.DrinkItemID, out _))
 							{
 								<td>@drinkItemMap[drinkItem.DrinkItemID].Name</td>
 								<td>@drinkItemMap[drinkItem.DrinkItemID].Size</td>
 								<td>@drinkItemMap[drinkItem.DrinkItemID].AlcoholPercent</td>
 								<td>@drinkItemMap[drinkItem.DrinkItemID].PureAlcGram</td>
+								<td><button class="btn btn-danger" @onclick="() => {DeleteItem(drinkItemKey, drinkItem);}">&#10006;</button></td>
 							}
 						</tr>
 					}
@@ -83,6 +86,19 @@ else
 		foreach (var drinkItem in drinkItems) 
 		{
 			drinkItemMap.Add(drinkItem.ID, drinkItem);
+		}
+	}
+
+
+	private async void DeleteItem(string day, ConsumedDrinkItem drink)
+	{
+		List<ConsumedDrinkItem> cDrinkItems;
+		var found = cDrinkItemCache.TryGetValue(day, out cDrinkItems);
+
+		if(found)
+		{
+			cDrinkItems.Remove(drink);
+			ConsumedDrinkDatabase.DeleteItemAsync(drink);
 		}
 	}
 }

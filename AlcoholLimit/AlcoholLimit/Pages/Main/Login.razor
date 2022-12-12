@@ -1,8 +1,12 @@
 ﻿@page "/"
 @using AlcoholLimit.Data
+@using Plugin.LocalNotification
+@using System.Diagnostics
 @inject NavigationManager UriHelper
 @inject ProfileDatabase pd
 @inject AppState AppState
+@inject ConsumedDrinkDatabase ConsumedDrinkDatabase
+@inject DrinkDatabase DrinkDatabase
 
 
 @if (stored_profile == null)
@@ -29,6 +33,10 @@ else
 		<div class="mb-3">
 			<label for="exampleFormControlInput1" class="form-label">Weight [kg]</label>
 			<input min="20" required @bind="profile.Weight" class="form-control" id="exampleFormControlInput1" placeholder="e.g. 80">
+		</div>
+		<div class="mb-3">
+			<label for="exampleFormControlInput1" class="form-label">Latest weekly</label>
+			<input min="20" required @bind="profile.latestWeekly" class="form-control" id="exampleFormControlInput1" placeholder="e.g. 2022.12.05. (leave empty for the current date)">
 		</div>
 		<div class="mb-3">
 			<label for="exampleFormControlInput1" class="form-label">Sex</label>
@@ -109,6 +117,9 @@ else
 		if (IsValidEmail(profile.Email) & profile.Password.Length > 5)
 		{
 			await pd.SaveItemAsync(profile);
+			DateTime dateTime;
+			if (!DateTime.TryParse(profile.latestWeekly, out dateTime))
+				profile.latestWeekly = DateTime.Now.Date.ToString();
 			stored_profile = profile;
 			profile = new ProfileItem();
 			profile.ID = -1;
@@ -120,13 +131,45 @@ else
 
 	}
 
-	private void login()
+	private async void login()
 	{
 		errors = "";
 		if (profile.Password == stored_profile.Password & profile.Email == stored_profile.Email)
 		{
 			AppState.SetProfile(stored_profile);
+			Debug.WriteLine(AppState.profile.latestWeekly);
+			string latest = AppState.profile.latestWeekly;
 			UriHelper.NavigateTo("/startdrink");
+
+			if (AppState.profile.weeklyNot && (DateTime.Now - DateTime.Parse(latest)).TotalDays >= 7)
+			{
+				stored_profile.latestWeekly = DateTime.Now.Date.ToString();
+				int totalCost = 0;
+				int totalCalories = 0;
+				List<ConsumedDrinkItem> list = await ConsumedDrinkDatabase.GetItemsAsync();
+				list.Reverse();
+
+				foreach (ConsumedDrinkItem cdi in list) if (DateTime.Parse(latest) <= DateTime.Parse(cdi.Date) && DateTime.Parse(cdi.Date) <= DateTime.Now)
+				{
+					DrinkItem drink = await DrinkDatabase.GetItemAsync(cdi.DrinkItemID);
+					totalCost += drink.Cost;
+					totalCalories += drink.Calories;
+				}
+
+				if (OperatingSystem.IsAndroid() || OperatingSystem.IsIOS())
+				{
+					var request = new NotificationRequest
+					{
+						NotificationId = 1,
+						Title = "Weekly summary (estimation)",
+						Description = "Your weekly drinking cost you " + totalCost + " HUF and you drank " + totalCalories + " kcal.",
+						CategoryType = NotificationCategoryType.Alarm
+					};
+					LocalNotificationCenter.Current.Show(request);
+				}
+			}
+
+			await pd.SaveItemAsync(stored_profile);
 		}
 		else
 			errors = "User not found!";

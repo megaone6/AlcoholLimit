@@ -5,9 +5,9 @@
 <ul class="nav justify-content-center">
 	@if (AppState.profile.ID != -1)
 	{
-		<a class="btn btn-primary" href="profile">Profile</a>
-		<a class="btn btn-primary" href="settings">Settings</a>
-		<a class="btn btn-primary" @onclick="logout">Logout</a>
+		<a class="btn btn-secondary" href="profile">Profile</a>
+		<a class="btn btn-secondary" style="margin-left:0.2em" href="settings">Settings</a>
+		<a class="btn btn-secondary" style="margin-left:0.2em" @onclick="logout">Logout</a>
 	}
 	else
 	{

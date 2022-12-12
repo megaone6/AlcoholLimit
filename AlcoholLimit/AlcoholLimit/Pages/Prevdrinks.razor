@@ -1,6 +1,7 @@
 ﻿@using AlcoholLimit.Data
 @inject ConsumedDrinkDatabase ConsumedDrinkDatabase
 @inject DrinkDatabase DrinkDatabase
+@inject AppState AppState
 
 
 @page "/prevdrinks"
@@ -22,7 +23,7 @@ else
 		{
 			<h2>@drinkItemKey</h2>
 
-			<table class="table">
+			<table class="table @(AppState.profile.nightmode ? "nightmode" : "")">
 				<thead>
 					<tr>
 						<th>Name</th>
